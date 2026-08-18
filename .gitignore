@@ -42,6 +42,10 @@ next-env.d.ts
 
 /media
 
+/.agents/
+/.claude/skills/
+skills-lock.json
+
 # Playwright
 node_modules/
 /test-results/
