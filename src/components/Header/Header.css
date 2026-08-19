@@ -1,0 +1,36 @@
+@layer components {
+  @scope (.site-header) {
+    :scope {
+      background: var(--primary-ultra-dark);
+      color: var(--white);
+      padding-block: var(--space-m);
+      padding-inline: var(--space-m);
+    }
+
+    .site-header__inner {
+      max-inline-size: var(--max-width);
+      margin-inline: auto;
+    }
+
+    .site-header__logo {
+      font-size: var(--h3);
+      margin-block-end: var(--space-xs);
+      color: inherit;
+    }
+
+    .site-header__tagline {
+      margin: 0;
+      font-size: var(--text-s);
+      color: var(--white-trans-70);
+      max-inline-size: none;
+    }
+
+    .site-header__user {
+      max-inline-size: var(--max-width);
+      margin-inline: auto;
+      margin-block-start: var(--space-xs);
+      font-size: var(--text-s);
+      color: var(--white-trans-70);
+    }
+  }
+}

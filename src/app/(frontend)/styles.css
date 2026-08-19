@@ -1,164 +1,599 @@
-:root {
-  --font-mono: 'Roboto Mono', monospace;
-}
+/* ordem de precedência dos layers */
+@layer fonts, reset, tokens, base, layout, utilities, components, overrides;
 
-* {
-  box-sizing: border-box;
-}
+/* fontes locais — Satoshi (body, 300–900 + italic) e Cabinet Grotesk (heading, 100–900), woff2 + woff fallback */
+@layer fonts {
+  @font-face {
+    font-family: 'Satoshi';
+    src: url('../fonts/Satoshi-Variable.woff2') format('woff2'),
+         url('../fonts/Satoshi-Variable.woff')  format('woff');
+    font-weight: 300 900;
+    font-style: normal;
+    font-display: swap;
+  }
 
-html {
-  font-size: 18px;
-  line-height: 32px;
+  @font-face {
+    font-family: 'Satoshi';
+    src: url('../fonts/Satoshi-VariableItalic.woff2') format('woff2'),
+         url('../fonts/Satoshi-VariableItalic.woff')  format('woff');
+    font-weight: 300 900;
+    font-style: italic;
+    font-display: swap;
+  }
 
-  background: rgb(0, 0, 0);
-  -webkit-font-smoothing: antialiased;
-}
-
-html,
-body,
-#app {
-  height: 100%;
-}
-
-body {
-  font-family: system-ui;
-  font-size: 18px;
-  line-height: 32px;
-
-  margin: 0;
-  color: rgb(1000, 1000, 1000);
-
-  @media (max-width: 1024px) {
-    font-size: 15px;
-    line-height: 24px;
+  @font-face {
+    font-family: 'Cabinet Grotesk';
+    src: url('../fonts/CabinetGrotesk-Variable.woff2') format('woff2'),
+         url('../fonts/CabinetGrotesk-Variable.woff')  format('woff');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
   }
 }
 
-img {
-  max-width: 100%;
-  height: auto;
-  display: block;
+/* reset mínimo */
+@layer reset {
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding-block: 0;
+    padding-inline: 0;
+  }
+
+  html {
+    hanging-punctuation: first last;
+    interpolate-size: allow-keywords;
+    container-type: inline-size;
+  }
+
+  img, picture, video, canvas, svg {
+    display: block;
+    max-inline-size: 100%;
+    block-size: auto;
+  }
+
+  input, button, textarea, select {
+    font: inherit;
+  }
+
+  a {
+    color: inherit;
+    text-decoration-skip-ink: auto;
+  }
+
+  button {
+    cursor: pointer;
+    border: none;
+    background: none;
+  }
+
+  ul[class], ol[class] {
+    list-style: none;
+  }
 }
 
-h1 {
-  margin: 40px 0;
-  font-size: 64px;
-  line-height: 70px;
-  font-weight: bold;
+/* design tokens */
+@layer tokens {
+  :root {
+    color-scheme: light;
 
-  @media (max-width: 1024px) {
-    margin: 24px 0;
-    font-size: 42px;
-    line-height: 42px;
-  }
+    /* espaçamento fluido, 360px → 1280px (base 8px)
+       clamp(min, intercept + slope*cqi, max)
+       slope = (max - min) / 57.5 * 100 | intercept = min - slope * 0.225 */
+    --space-xs:      clamp(0.5rem, 0.402rem + 0.435cqi, 0.75rem);   /*  8px → 12px */
+    --space-s:       clamp(0.75rem, 0.554rem + 0.870cqi, 1.25rem);  /* 12px → 20px */
+    --space-m:       clamp(1.25rem, 0.956rem + 1.304cqi, 2rem);     /* 20px → 32px */
+    --space-l:       clamp(2rem, 1.609rem + 1.739cqi, 3rem);        /* 32px → 48px */
+    --space-xl:      clamp(3rem, 2.413rem + 2.609cqi, 4.5rem);      /* 48px → 72px */
+    --space-xxl:     clamp(4.5rem, 3.522rem + 4.348cqi, 7rem);      /* 72px → 112px */
+    --space-section: clamp(5rem, 3.826rem + 5.217cqi, 8rem);        /* 80px → 128px */
+    --logo-width:    clamp(7.5rem, 6.130rem + 6.087cqi, 11rem);     /* 120px → 176px */
+    --logo-height:   48px;
 
-  @media (max-width: 768px) {
-    font-size: 38px;
-    line-height: 38px;
-  }
+    /* font families */
+    --font-body:    'Satoshi', 'Inter Tight', sans-serif;
+    --font-heading: 'Cabinet Grotesk', sans-serif;
+    --font-mono:    'Roboto Mono', monospace;
 
-  @media (max-width: 400px) {
-    font-size: 32px;
-    line-height: 32px;
+    /* escala de texto, base 18px */
+    --text-xs:  clamp(0.75rem, 0.701rem + 0.217cqi, 0.875rem);   /* 12px → 14px — caption */
+    --text-s:   clamp(0.875rem, 0.826rem + 0.217cqi, 1rem);      /* 14px → 16px — small */
+    --text-m:   clamp(1.125rem, 1.076rem + 0.217cqi, 1.25rem);   /* 18px → 20px — body */
+    --text-mm:  clamp(1.25rem, 1.152rem + 0.435cqi, 1.5rem);     /* 20px → 24px — lead text */
+    --text-l:   clamp(1.5rem, 1.353rem + 0.652cqi, 1.875rem);    /* 24px → 30px */
+    --text-xl:  clamp(1.875rem, 1.679rem + 0.870cqi, 2.375rem);  /* 30px → 38px */
+    --text-xxl: clamp(2.375rem, 2.130rem + 1.087cqi, 3rem);      /* 38px → 48px */
+
+    /* escala de heading (Cabinet Grotesk) — .hero/.lead são modificadores de display, fora do h1-h6
+       h4/h5: peso 600 sem uppercase · h6: peso 600 + uppercase + tracking */
+    --heading-hero: clamp(2.5rem, 1.913rem + 2.609cqi, 4rem);       /* 40px → 64px · .hero */
+    --heading-lead: clamp(2.125rem, 1.685rem + 1.957cqi, 3.25rem);  /* 34px → 52px · .lead */
+    --h1: clamp(1.75rem, 1.359rem + 1.739cqi, 2.75rem);             /* 28px → 44px */
+    --h2: clamp(1.5rem, 1.206rem + 1.304cqi, 2.25rem);              /* 24px → 36px */
+    --h3: clamp(1.375rem, 1.179rem + 0.870cqi, 1.875rem);           /* 22px → 30px */
+    --h4: clamp(1.125rem, 1.027rem + 0.435cqi, 1.375rem);           /* 18px → 22px */
+    --h5: clamp(1rem, 0.951rem + 0.217cqi, 1.125rem);               /* 16px → 18px */
+    --h6: clamp(0.875rem, 0.826rem + 0.217cqi, 1rem);               /* 14px → 16px */
+
+    --text-line-height:    1.65;
+    --heading-line-height: 1.15;
+    --text-font-weight:    400;
+    --heading-font-weight: 700;
+
+    /* gaps e padding */
+    --grid-gap:        var(--space-l) var(--space-m);
+    --grid-gap-s:      var(--space-m) var(--space-s);
+    --card-gap:        var(--space-m);
+    --content-gap:     calc(var(--space-m) * 1.5);
+    --container-gap:   var(--space-xxl);
+    --padding-section: var(--space-section) var(--space-m);
+    --offset:          88px;
+
+    /* radius — escala moderada (institucional, não landing page) */
+    --radius:         clamp(0.375rem, 0.3rem + 0.326cqi, 0.625rem);  /*  6px → 10px */
+    --radius-inside:  calc(var(--radius) * 0.5);
+    --radius-outside: calc(var(--radius-inside) + var(--space-xs)); /* inner + padding-xs = outer */
+    --radius-btn:     var(--radius);
+    --radius-pill:    9999px;
+    --radius-circle:  50%;
+    --radius-s:       clamp(0.25rem, 0.2rem + 0.217cqi, 0.375rem);   /*  4px →  6px */
+    --radius-m:       clamp(0.5rem, 0.402rem + 0.435cqi, 0.75rem);   /*  8px → 12px */
+    --radius-l:       clamp(0.75rem, 0.554rem + 0.870cqi, 1.25rem);  /* 12px → 20px */
+    --radius-xl:      clamp(1rem, 0.7rem + 1.304cqi, 1.75rem);       /* 16px → 28px */
+
+    /* tamanhos — container, largura, altura */
+    --container-width:     1280px;
+    --container-min-width: 320px;
+    --max-width:           1280px;
+    --max-width-m:         960px;   /* blog, catálogos */
+    --max-width-s:         720px;   /* texto longo, sobre nós */
+    --min-height:          200px;
+    --min-height-section:  60vh;
+    --content-width:       var(--container-width);
+    --width-10: calc(var(--content-width) * 0.1);
+    --width-20: calc(var(--content-width) * 0.2);
+    --width-30: calc(var(--content-width) * 0.3);
+    --width-40: calc(var(--content-width) * 0.4);
+    --width-50: calc(var(--content-width) * 0.5);
+    --width-60: calc(var(--content-width) * 0.6);
+    --width-70: calc(var(--content-width) * 0.7);
+    --width-80: calc(var(--content-width) * 0.8);
+    --width-90: calc(var(--content-width) * 0.9);
+
+    /* primary — #1f3c8f · derivados: lightness ±10%, hue/chroma fixos */
+    --primary:             oklch(0.388 0.142 265.5);
+    --primary-dark:        oklch(0.28 0.142 265.5);
+    --primary-ultra-dark:  oklch(0.18 0.12 265.5);
+    --primary-light:       oklch(0.55 0.14 265.5);
+    --primary-ultra-light: oklch(0.95 0.035 265.5);
+
+    /* transparências de primary */
+    --primary-trans-10: oklch(0.388 0.142 265.5 / 10%);
+    --primary-trans-20: oklch(0.388 0.142 265.5 / 20%);
+    --primary-trans-30: oklch(0.388 0.142 265.5 / 30%);
+    --primary-trans-40: oklch(0.388 0.142 265.5 / 40%);
+    --primary-trans-50: oklch(0.388 0.142 265.5 / 50%);
+    --primary-trans-60: oklch(0.388 0.142 265.5 / 60%);
+    --primary-trans-70: oklch(0.388 0.142 265.5 / 70%);
+    --primary-trans-80: oklch(0.388 0.142 265.5 / 80%);
+    --primary-trans-90: oklch(0.388 0.142 265.5 / 90%);
+
+    /* shades numeradas — ratio WCAG contra #fff documentado */
+    --primary-500: oklch(0.45 0.15 265.5);  /* ratio ~5.4:1 — texto sobre fundo claro */
+    --primary-600: oklch(0.40 0.14 265.5);  /* ratio ~6.1:1 — botões */
+    --primary-700: oklch(0.35 0.14 265.5);  /* ratio ~7.5:1 — texto de alta ênfase */
+
+    /* accent — #e5473a · derivados: lightness ±10%, hue/chroma fixos */
+    --accent:              oklch(0.6219 0.1968 28.73);
+    --accent-dark:         oklch(0.50 0.1968 28.73);
+    --accent-ultra-dark:   oklch(0.38 0.18 28.73);
+    --accent-light:        oklch(0.74 0.14 28.73);
+    --accent-ultra-light:  oklch(0.95 0.04 28.73);
+
+    /* neutral — #8aa8b0 · hue 215.7, derivados ±~12% de lightness */
+    --neutral:             oklch(0.7117 0.035 215.7);
+    --neutral-dark:        oklch(0.56 0.038 215.7);
+    --neutral-ultra-dark:  oklch(0.42 0.04 215.7);
+    --neutral-light:       oklch(0.84 0.025 215.7);
+    --neutral-ultra-light: oklch(0.95 0.015 215.7);
+
+    /* base — #303742 · hue 259.4, baixo chroma, derivados ±~10% */
+    --base:                oklch(0.3348 0.0217 259.4);
+    --base-dark:           oklch(0.22 0.02 259.4);
+    --base-ultra-dark:     oklch(0.15 0.018 259.4);
+    --base-light:          oklch(0.58 0.022 259.4);
+    --base-ultra-light:    oklch(0.97 0.005 259.4);
+
+    /* transparências de base-ultra-dark */
+    --base-ultra-dark-trans-10: oklch(0.15 0.018 259.4 / 10%);
+    --base-ultra-dark-trans-20: oklch(0.15 0.018 259.4 / 20%);
+    --base-ultra-dark-trans-30: oklch(0.15 0.018 259.4 / 30%);
+    --base-ultra-dark-trans-40: oklch(0.15 0.018 259.4 / 40%);
+    --base-ultra-dark-trans-50: oklch(0.15 0.018 259.4 / 50%);
+    --base-ultra-dark-trans-60: oklch(0.15 0.018 259.4 / 60%);
+    --base-ultra-dark-trans-70: oklch(0.15 0.018 259.4 / 70%);
+    --base-ultra-dark-trans-80: oklch(0.15 0.018 259.4 / 80%);
+    --base-ultra-dark-trans-90: oklch(0.15 0.018 259.4 / 90%);
+
+    /* white / black */
+    --white: oklch(1 0 0);
+    --white-trans-10: oklch(1 0 0 / 10%);
+    --white-trans-20: oklch(1 0 0 / 20%);
+    --white-trans-30: oklch(1 0 0 / 30%);
+    --white-trans-40: oklch(1 0 0 / 40%);
+    --white-trans-50: oklch(1 0 0 / 50%);
+    --white-trans-60: oklch(1 0 0 / 60%);
+    --white-trans-70: oklch(1 0 0 / 70%);
+    --white-trans-80: oklch(1 0 0 / 80%);
+    --white-trans-90: oklch(1 0 0 / 90%);
+    --black: oklch(0.15 0 0);
+
+    /* border — acromática, #dedede */
+    --border-color: oklch(0.9006 0 0);
+
+    /* surface tokens — aliases de fundo, troca de tema sem caçar seletor */
+    --surface-deep:  var(--primary-ultra-dark);  /* hero escuro, seções CTA dark */
+    --surface-page:  var(--white);               /* fundo padrão da página */
+    --surface-card:  var(--base-ultra-light);     /* cards e seções claras */
+    --surface-card2: oklch(0.96 0.01 215.7);      /* cards com toque do neutral azulado */
+
+    /* aliases adicionais */
+    --bg:      var(--surface-page);
+    --bg-dark: var(--base-ultra-dark);
+    --border:  var(--border-color);
+    --text:    var(--text-color);
+
+    /* grid — repeat patterns */
+    --grid-1:  repeat(1, minmax(0, 1fr));
+    --grid-2:  repeat(2, minmax(0, 1fr));
+    --grid-3:  repeat(3, minmax(0, 1fr));
+    --grid-4:  repeat(4, minmax(0, 1fr));
+    --grid-5:  repeat(5, minmax(0, 1fr));
+    --grid-6:  repeat(6, minmax(0, 1fr));
+    --grid-7:  repeat(7, minmax(0, 1fr));
+    --grid-8:  repeat(8, minmax(0, 1fr));
+    --grid-9:  repeat(9, minmax(0, 1fr));
+    --grid-10: repeat(10, minmax(0, 1fr));
+    --grid-11: repeat(11, minmax(0, 1fr));
+    --grid-12: repeat(12, minmax(0, 1fr));
+
+    /* grid — patterns assimétricos */
+    --grid-1-2: minmax(0, 1fr) minmax(0, 2fr);
+    --grid-1-3: minmax(0, 1fr) minmax(0, 3fr);
+    --grid-1-4: minmax(0, 1fr) minmax(0, 4fr);
+    --grid-2-1: minmax(0, 2fr) minmax(0, 1fr);
+    --grid-2-3: minmax(0, 2fr) minmax(0, 3fr);
+    --grid-2-4: minmax(0, 2fr) minmax(0, 4fr);
+    --grid-3-1: minmax(0, 3fr) minmax(0, 1fr);
+    --grid-3-2: minmax(0, 3fr) minmax(0, 2fr);
+    --grid-3-4: minmax(0, 3fr) minmax(0, 4fr);
+    --grid-4-1: minmax(0, 4fr) minmax(0, 1fr);
+    --grid-4-2: minmax(0, 4fr) minmax(0, 2fr);
+    --grid-4-3: minmax(0, 4fr) minmax(0, 3fr);
+
+    /* cores de texto/heading */
+    --text-color:    var(--base);
+    --heading-color: var(--base-ultra-dark);
   }
 }
 
-p {
-  margin: 24px 0;
+/* comportamento base e tipografia */
+@layer base {
 
-  @media (max-width: 1024px) {
-    margin: calc(var(--base) * 0.75) 0;
+  /* scroll */
+  [id] {
+    scroll-margin-top: calc(var(--offset) / 1.6);
   }
-}
+  html {
+    font-size: 100%;
+    scroll-behavior: smooth;
+  }
 
-a {
-  color: currentColor;
-
-  &:focus {
-    opacity: 0.8;
+  /* focus visible — não sobrescrever nem remover */
+  :focus {
     outline: none;
   }
+  :focus-visible {
+    outline: solid 1px var(--primary);
+    outline-offset: 5px;
 
-  &:active {
-    opacity: 0.7;
-    outline: none;
-  }
-}
-
-svg {
-  vertical-align: middle;
-}
-
-.home {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  height: 100vh;
-  padding: 45px;
-  max-width: 1024px;
-  margin: 0 auto;
-  overflow: hidden;
-
-  @media (max-width: 400px) {
-    padding: 24px;
+    @media (prefers-reduced-motion: no-preference) {
+      transition: all 0.3s;
+    }
   }
 
-  .content {
+  /* navegação — sem bullet, sem depender de classe */
+  nav ul, nav ol {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    list-style: none;
+  }
+
+  /* overflow controlado */
+  header {
+    max-inline-size: 100cqi;
+  }
+  body {
+    overflow-x: clip;
+  }
+
+  /* texto base do body */
+  body {
+    font-family: var(--font-body);
+    font-size: var(--text-m);
+    line-height: var(--text-line-height);
+    color: var(--text-color);
+    background-color: var(--bg);
+  }
+
+  /* parágrafos e spans */
+  :where(p),
+  :where(span) {
+    line-height: var(--text-line-height);
+  }
+  :where(p) {
+    font-weight: var(--text-font-weight);
+    text-wrap: pretty; /* evita palavras órfãs — progressive enhancement, ignorado onde não suportado */
+    max-inline-size: 72ch;   /* legibilidade ideal — 60-75ch */
+  }
+
+  /* headings h1-h6, Cabinet Grotesk */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    line-height: var(--heading-line-height);
+    color: var(--heading-color);
+    font-weight: var(--heading-font-weight);
+    text-wrap: balance; /* fallback gracioso — ignorado onde não suportado */
+  }
+  h1 { font-size: var(--h1); }
+  h2 { font-size: var(--h2); }
+  h3 { font-size: var(--h3); }
+  h4 { font-size: var(--h4); }
+  h5 { font-size: var(--h5); }
+  h6 { font-size: var(--h6); }
+
+  /* h4-h5 — mesmo tamanho do body mas peso 600 distingue a hierarquia */
+  h4, h5 {
+    font-weight: 600;
+  }
+
+  /* h6 — overline/label pattern: uppercase + tracking */
+  h6 {
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+}
+
+/* containers e sections */
+@layer layout {
+
+  /* seções — padding e gap */
+  :where(section:not(section section)) {
+    padding-block-start: var(--space-section);
+    padding-block-end: var(--space-xl);
+    padding-inline: var(--space-m);
+  }
+  section:where(:not(.shape-divider)) {
+    gap: var(--container-gap);
     display: flex;
     flex-direction: column;
+  }
+
+  /* containers — gap de conteúdo e blocos */
+  :where(.container) > .block,
+  :where(.container) {
+    gap: var(--content-gap);
+    display: flex;
+    flex-direction: column;
+  }
+
+}
+
+/* links de conteúdo editorial + display modifiers */
+@layer components {
+
+  /* links sem classe (conteúdo editorial) */
+  .text-content a:not([class]),
+  label a {
+    text-decoration-line: underline;
+    text-decoration-color: var(--primary);
+    text-underline-offset: 0.2em;
+    text-decoration-thickness: 1px;
+
+    &:hover {
+      color: var(--primary);
+    }
+
+    &:focus-visible {
+      outline-offset: 2px;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      transition: all 0.3s;
+    }
+  }
+
+  /* .hero e .lead — modificadores de display para h1/h2, fora do sistema h1-h6
+     uso: <h1 class="hero"> no hero da home · <h2 class="lead"> em seções de impacto */
+  .hero {
+    font-size: var(--heading-hero); /* 40px → 64px */
+  }
+
+  .lead {
+    font-size: var(--heading-lead); /* 34px → 52px */
+  }
+
+}
+
+/* classes utilitárias */
+@layer utilities {
+
+  /* .btn .btn-{cor} .btn-{tamanho} — tamanho default m, cor obrigatória */
+
+  .btn {
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    flex-grow: 1;
+    gap: var(--space-xs);
+    padding-block: var(--space-s);
+    padding-inline: var(--space-l);
+    font-family: var(--font-heading);
+    font-size: var(--text-s);
+    font-weight: 700;
+    text-decoration: none;
+    border: 2px solid transparent;
+    border-radius: var(--radius-btn);
+    min-block-size: 44px;
+    white-space: nowrap;
+    letter-spacing: 0.01em;
+    cursor: pointer;
 
-    h1 {
-      text-align: center;
+    @media (prefers-reduced-motion: no-preference) {
+      transition: background-color 0.2s, border-color 0.2s, color 0.2s, transform 0.2s;
+
+      &:hover {
+        transform: translateY(-2px);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
     }
   }
 
-  .links {
-    display: flex;
-    align-items: center;
-    gap: 12px;
+  /* tamanhos: xs · s · m (default) · l · xl */
+  .btn-xs {
+    padding-block: var(--space-xs);
+    padding-inline: var(--space-s);
+    font-size: var(--text-xs);
+    min-block-size: 32px;
+    letter-spacing: 0;
+  }
 
-    a {
-      text-decoration: none;
-      padding: 0.25rem 0.5rem;
-      border-radius: 4px;
+  .btn-s {
+    padding-block: var(--space-xs);
+    padding-inline: var(--space-m);
+    font-size: var(--text-xs);
+    min-block-size: 36px;
+  }
+
+  /* .btn-m — implícito no .btn base (44px, --text-s) */
+
+  .btn-l {
+    padding-block: var(--space-s);
+    padding-inline: var(--space-xl);
+    font-size: var(--text-m);
+    min-block-size: 48px;
+  }
+
+  .btn-xl {
+    padding-block: var(--space-m);
+    padding-inline: var(--space-xl);
+    font-size: var(--text-m);
+    min-block-size: 56px;
+  }
+
+  /* cores sólidas */
+
+  .btn-pri {
+    background: var(--primary);
+    color: var(--white);
+
+    &:hover {
+      background: var(--primary-dark);
     }
 
-    .admin {
-      color: rgb(0, 0, 0);
-      background: rgb(1000, 1000, 1000);
-      border: 1px solid rgb(0, 0, 0);
-    }
-
-    .docs {
-      color: rgb(1000, 1000, 1000);
-      background: rgb(0, 0, 0);
-      border: 1px solid rgb(1000, 1000, 1000);
+    &:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 3px;
     }
   }
 
-  .footer {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+  .btn-acc {
+    background: var(--accent);
+    color: var(--white);
 
-    @media (max-width: 1024px) {
-      flex-direction: column;
-      gap: 6px;
+    &:hover {
+      background: var(--accent-dark);
     }
 
-    p {
-      margin: 0;
-    }
-
-    .codeLink {
-      text-decoration: none;
-      padding: 0 0.5rem;
-      background: rgb(60, 60, 60);
-      border-radius: 4px;
+    &:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
     }
   }
+
+  .btn-dark {
+    background: var(--base-ultra-dark);
+    color: var(--white);
+
+    &:hover {
+      background: var(--base-dark);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--base-ultra-dark);
+      outline-offset: 3px;
+    }
+  }
+
+  .btn-white {
+    background: var(--white);
+    color: var(--primary);
+
+    &:hover {
+      background: var(--white-trans-90);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--white);
+      outline-offset: 3px;
+    }
+  }
+
+  /* states */
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--primary);
+    border-color: var(--primary);
+
+    &:hover {
+      background: var(--primary);
+      color: var(--white);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 3px;
+    }
+  }
+
+  .btn-ghost-white {
+    background: transparent;
+    color: var(--white);
+    border-color: var(--white-trans-30);
+
+    &:hover {
+      background: var(--white-trans-10);
+      border-color: var(--white);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--white);
+      outline-offset: 3px;
+    }
+  }
+
+  .btn[disabled],
+  .btn[aria-disabled="true"] {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+    transform: none;
+  }
+
 }

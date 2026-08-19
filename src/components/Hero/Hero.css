@@ -1,0 +1,23 @@
+@layer components {
+  @scope (.hero-section) {
+    :scope {
+      max-inline-size: var(--max-width-m);
+      margin-inline: auto;
+      text-align: center;
+      align-items: center;
+    }
+
+    .hero-section__subtitle {
+      font-size: var(--text-mm);
+      color: var(--base-light);
+      max-inline-size: var(--max-width-s);
+    }
+
+    .hero-section__actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: var(--space-s);
+    }
+  }
+}

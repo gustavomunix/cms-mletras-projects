@@ -1,0 +1,25 @@
+@layer components {
+  @scope (.site-footer) {
+    :scope {
+      border-block-start: 1px solid var(--border-color);
+      padding-block: var(--space-m);
+      padding-inline: var(--space-m);
+      text-align: center;
+      color: var(--base-light);
+      font-size: var(--text-s);
+    }
+
+    p {
+      margin: 0;
+      max-inline-size: none;
+    }
+
+    code {
+      background: var(--surface-card);
+      padding-block: 2px;
+      padding-inline: var(--space-xs);
+      border-radius: var(--radius-s);
+      font-family: var(--font-mono, monospace);
+    }
+  }
+}

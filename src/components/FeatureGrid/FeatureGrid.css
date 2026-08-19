@@ -1,0 +1,14 @@
+@layer components {
+  @scope (.feature-grid) {
+    :scope {
+      container: feature-grid / inline-size;
+      display: grid;
+      grid-template-columns: var(--grid-2);
+      gap: var(--grid-gap);
+
+      @container feature-grid (width >= 48rem) {
+        grid-template-columns: var(--grid-4);
+      }
+    }
+  }
+}
