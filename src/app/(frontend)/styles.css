@@ -29,6 +29,42 @@
     font-style: normal;
     font-display: swap;
   }
+
+  @font-face {
+    font-family: 'JetBrains Mono';
+    src: url('../fonts/JetBrainsMono-Variable.woff2') format('woff2'),
+         url('../fonts/JetBrainsMono-Variable.woff')  format('woff');
+    font-weight: 100 800;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'JetBrains Mono';
+    src: url('../fonts/JetBrainsMono-VariableItalic.woff2') format('woff2'),
+         url('../fonts/JetBrainsMono-VariableItalic.woff')  format('woff');
+    font-weight: 100 800;
+    font-style: italic;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'Inter Tight';
+    src: url('../fonts/InterTight-Variable.woff2') format('woff2'),
+         url('../fonts/InterTight-Variable.woff')  format('woff');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'Inter Tight';
+    src: url('../fonts/InterTight-VariableItalic.woff2') format('woff2'),
+         url('../fonts/InterTight-VariableItalic.woff')  format('woff');
+    font-weight: 100 900;
+    font-style: italic;
+    font-display: swap;
+  }
 }
 
 /* reset mínimo */
@@ -93,7 +129,7 @@
     /* font families */
     --font-body:    'Satoshi', 'Inter Tight', sans-serif;
     --font-heading: 'Cabinet Grotesk', sans-serif;
-    --font-mono:    'Roboto Mono', monospace;
+    --font-mono:    'JetBrains Mono', monospace;
 
     /* escala de texto, base 18px */
     --text-xs:  clamp(0.75rem, 0.701rem + 0.217cqi, 0.875rem);   /* 12px → 14px — caption */

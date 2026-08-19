@@ -27,13 +27,9 @@ falha).
 
 ## Known render warns
 
-- `[FONT_MISSING]` "Inter Tight", "Roboto Mono" — só aparecem como fallback em
-  `--font-body`/`--font-mono` (`styles.css`), sem `@font-face` nem `next/font`
-  em lugar nenhum do app. Substituto aceito (fallback de sistema); não são
-  fontes reais do projeto. Se um dia forem carregadas de verdade, adicionar via
-  `cfg.extraFonts` ou `cfg.runtimeFontPrefixes`.
-- Render check rodado com `--no-render-check`: 0 componentes sincronizados,
-  nada pra renderizar.
+- Nenhum `[FONT_MISSING]` pendente em 2026-08-19: JetBrains Mono
+  (`--font-mono`) e Inter Tight (fallback de `--font-body`) viraram fontes
+  reais (`@font-face` local, variable) — ver `docs/design-system.md`.
 
 ## Re-sync risks
 

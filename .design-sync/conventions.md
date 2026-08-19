@@ -55,10 +55,9 @@ Tudo em `oklch()`, custom properties em `:root`:
 
 ## Fontes
 
-`Satoshi` (`--font-body`) e `Cabinet Grotesk` (`--font-heading`) são reais,
-locais, variable weight. `Roboto Mono`/`Inter Tight` aparecem só como
-fallback nas stacks — sem `@font-face` real, sempre caem no fallback de
-sistema.
+Todas reais, locais, variable weight: `Satoshi` (`--font-body`), `Inter
+Tight` (fallback de `--font-body`), `Cabinet Grotesk` (`--font-heading`),
+`JetBrains Mono` (`--font-mono`).
 
 ## `.btn` — a classe utilitária de botão
 
