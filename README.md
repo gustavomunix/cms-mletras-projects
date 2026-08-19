@@ -1,39 +1,38 @@
 # CMS Multiverso das Letras — Payload CMS
 
 Payload CMS 3.x nativo em Next.js App Router, gerenciado com pnpm. Admin
-vanilla (sem reskin), banco Postgres, storage S3-compatible opcional.
+vanilla (sem reskin), deploy Cloudflare Workers nativo.
 
 ## Contrato de portabilidade
 
-- **Banco**: Postgres via `DATABASE_URL` (`@payloadcms/db-postgres`) —
-  qualquer Postgres (local, Neon, RDS, Supabase) funciona sem mudar código.
-- **Storage de mídia**: disco local por padrão. Se `S3_BUCKET` estiver
-  definido no `.env`, o plugin `storage-s3` ativa e passa a usar o endpoint
-  S3-compatible configurado (R2, S3 real, etc.) — troca é só env var, sem
-  tocar em `payload.config.ts`.
-- **Destino de deploy**: deliberadamente não decidido ainda. O código não tem
-  binding específico de nenhuma plataforma (Vercel/AWS/Cloudflare).
+- **Banco**: D1 (SQLite) via binding `D1` (`@payloadcms/db-d1-sqlite`) —
+  banco serverless do Cloudflare, sem connection string; Wrangler cuida do
+  binding local e remoto.
+- **Storage de mídia**: sempre R2 via binding `R2` (`@payloadcms/storage-r2`)
+  — sem fallback pra disco local, é parte fixa do stack.
+- **Destino de deploy**: Cloudflare Workers, via `@opennextjs/cloudflare` +
+  Wrangler. Decidido, não é mais genérico.
 
 ## Requisitos
 
 - Node >= 20.9
 - pnpm >= 10 (`packageManager` já fixado no `package.json`)
-- Docker (só para o Postgres local — a aplicação roda nativa via `pnpm dev`,
-  não em container)
+- Conta Cloudflare + `pnpm wrangler login` (sem Docker, sem Postgres local —
+  Wrangler cria bindings locais mockados de D1/R2 automaticamente)
 
 ## Desenvolvimento local
 
 ```bash
 cp .env.example .env   # ajustar se necessário
-docker compose up -d   # sobe Postgres em localhost:5433
 pnpm install
+pnpm wrangler login    # autenticar com Cloudflare (uma vez)
 pnpm dev                # http://localhost:3000/admin
 ```
 
 Primeiro acesso cria o admin em `/admin/create-first-user`.
 
-Porta do Postgres é `5433` (não `5432`) no host, para não conflitar com
-outros Postgres locais já rodando. Ver `docker-compose.yml`.
+`pnpm dev` já sobe com bindings locais de D1/R2 via Wrangler — não precisa
+subir nenhum container.
 
 ## Migrations
 
@@ -45,24 +44,45 @@ pnpm payload migrate:create
 pnpm payload migrate
 ```
 
-## Storage S3 (opcional, staging/produção)
+## Deploy
 
-Preencher no `.env`:
-
-```
-S3_BUCKET=...
-S3_ENDPOINT=...
-S3_REGION=...
-S3_ACCESS_KEY_ID=...
-S3_SECRET_ACCESS_KEY=...
-S3_FORCE_PATH_STYLE=true   # necessário para MinIO/endpoints self-hosted; false para S3/R2 nativos
+```bash
+pnpm run deploy
 ```
 
-Sem essas variáveis, uploads ficam em disco local (`./media`).
+Roda `deploy:database` (aplica migrations + `PRAGMA optimize` no D1 remoto)
+seguido de `deploy:app` (build com `opennextjs-cloudflare` + deploy do
+Worker). Pra ambiente não-default, setar `CLOUDFLARE_ENV` (ver
+`wrangler.jsonc`).
 
 ## Collections
 
 - `Users` — auth nativa do Payload.
-- `Media` — upload, storage local ou S3 conforme acima.
+- `Media` — upload, sempre via R2.
 
 Novas collections entram conforme o modelo de conteúdo for definido.
+
+## Logs
+
+Logs da API não vêm habilitados por padrão (consome quota) — habilitar no
+painel Cloudflare ([docs](https://developers.cloudflare.com/workers/observability/logs/workers-logs/#enable-workers-logs)).
+
+O `payload.config.ts` usa um logger customizado em produção porque o
+default do Payload (`pino-pretty`) depende de APIs Node ausentes em Workers
+(`fs.write is not implemented`). Em dev continua `pino-pretty` normal.
+Controla nível via `PAYLOAD_LOG_LEVEL` (`debug`, `info`, `warn`, `error`).
+
+Se aparecer "Failed to publish diagnostic channel message" nos logs, vem da
+lib `undici`. `Media` já usa `skipSafeFetch: true` pra usar fetch nativo em
+vez de undici nos uploads — seguro porque Workers já bloqueia acesso a IPs
+privados por padrão (proteção SSRF nativa).
+
+## Problemas conhecidos
+
+- **Resize de imagem**: Workers não suporta `sharp` — `crop`/`focalPoint`
+  desabilitados em `Media`, `imageSizes` não funciona.
+- **GraphQL**: suporte completo não garantido em Workers, aguardando fix
+  upstream ([workerd#5175](https://github.com/cloudflare/workerd/issues/5175)).
+- **Tamanho do Worker**: limite de 3mb no plano free
+  ([docs](https://developers.cloudflare.com/workers/platform/limits/#worker-size));
+  recomendado plano pago se o bundle crescer.
