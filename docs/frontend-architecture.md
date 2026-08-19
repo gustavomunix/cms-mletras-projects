@@ -45,6 +45,14 @@ componentes pequenos e isolados (`Header`, `Hero`, `FeatureGrid` +
 5. Se o componente pode hospedar conteúdo de terceiros/slot (ex.: rich
    text vindo do Payload), usar `@scope (...) to (...)` (donut scoping)
    pra não vazar estilo pro conteúdo embutido.
+6. Nomenclatura de classe é BEM-like: `.bloco` na raiz (mesmo nome do
+   `@scope`) + `.bloco__elemento` pros filhos — ex.:
+   `.site-header`/`.site-header__inner`/`.site-header__logo`,
+   `.hero-section`/`.hero-section__subtitle`. Sem modificador `--` até
+   surgir necessidade real.
+7. Importar sempre pelo alias `@/...` (`@/components/NomeDoComponente/NomeDoComponente`),
+   nunca caminho relativo `../../` entre pastas de nível diferente —
+   `@/*` mapeia pra `./src/*` no `tsconfig.json`.
 
 ## Estado atual
 

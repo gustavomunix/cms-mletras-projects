@@ -12,6 +12,22 @@ propriedades lógicas, `text-wrap`, `prefers-reduced-motion:
 no-preference`. Ver `docs/design-system.md` e
 `docs/frontend-architecture.md`.
 
+## Componentes — CSS por componente
+
+Todo componente em `src/components/<Nome>/` segue o padrão (ver
+`Header.css`/`Hero.css` como referência canônica):
+
+- Arquivo `<Nome>.css` importado direto no `.tsx` do componente
+  (`import './Nome.css'`).
+- Regras dentro de `@layer components { @scope (.raiz-do-componente) { ... } }`
+  — nunca CSS solto fora de layer/scope.
+- Nomenclatura de classe BEM-like: `.bloco` (raiz) + `.bloco__elemento`
+  (ex.: `.site-header`/`.site-header__inner`/`.site-header__logo`,
+  `.hero-section`/`.hero-section__subtitle`). Sem modificador `--` até
+  surgir a necessidade real.
+- Só `var(--*)` de `styles.css` (canônico) — nunca valor hardcoded de cor,
+  espaçamento ou radius.
+
 <!-- BEGIN:nextjs-agent-rules -->
 
 # This is NOT the Next.js you know

@@ -85,9 +85,11 @@ Espaçamento e tipografia usam `clamp()` em `cqi` (não `vw`) — a fórmula
 de cada token é a mesma calculada a partir do range 360px→1280px, só a
 unidade muda; funciona porque `html` vira container (`container-type:
 inline-size`) no layer `reset`, então `cqi` no `:root` equivale ao
-viewport hoje. Se um componente futuro definir seu próprio `container`
-(como `FeatureGrid`), os tokens fluidos dentro dele passam a reagir ao
-tamanho desse container, não mais da viewport inteira.
+viewport hoje. `FeatureGrid` já define seu próprio `container` (`container:
+feature-grid / inline-size` em `FeatureGrid.css`) — os tokens fluidos
+usados dentro dele reagem ao tamanho desse container, não mais da
+viewport inteira. Qualquer componente novo que precise do mesmo
+comportamento segue a mesma receita.
 
 Exceção documentada à skill: **sem dark mode**. `:root` declara apenas
 `color-scheme: light` — a paleta é fixa e institucional (Key Visual
@@ -116,6 +118,13 @@ Arquivos: `Satoshi-Variable.woff2/.woff`,
 `Satoshi-VariableItalic.woff2/.woff`,
 `CabinetGrotesk-Variable.woff2/.woff`. Sem CDN externa — tudo local via
 `@font-face` no topo de `styles.css`.
+
+`--font-mono` (`'Roboto Mono', monospace`) é usado (`Footer.css`) mas
+**não tem `@font-face` nem `next/font` em lugar nenhum** — hoje sempre
+cai no fallback `monospace` do sistema. `'Inter Tight'` (fallback dentro
+de `--font-body`) também não é carregada. Se algum dia precisarem ser
+fontes reais, adicionar via `@font-face` local (mesmo padrão de
+Satoshi/Cabinet Grotesk) ou `next/font`.
 
 Ver também [`frontend-architecture.md`](./frontend-architecture.md) pra
 como usar esses tokens ao criar um componente novo.

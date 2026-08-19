@@ -1,0 +1,16 @@
+{
+  "projectId": "424b592c-e304-478f-a98b-7374b03a6053",
+  "shape": "package",
+  "pkg": "mletras",
+  "globalName": "Mletras",
+  "cssEntry": "src/app/(frontend)/styles.css",
+  "tsconfig": "tsconfig.json",
+  "readmeHeader": ".design-sync/conventions.md",
+  "componentSrcMap": {
+    "Header": "src/components/Header/Header.tsx",
+    "Hero": "src/components/Hero/Hero.tsx",
+    "FeatureGrid": "src/components/FeatureGrid/FeatureGrid.tsx",
+    "FeatureCard": "src/components/FeatureCard/FeatureCard.tsx",
+    "Footer": "src/components/Footer/Footer.tsx"
+  }
+}
