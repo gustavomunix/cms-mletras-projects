@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "skills": {
+    "auth": {
+      "source": "vercel-labs/vercel-plugin",
+      "sourceType": "github",
+      "skillPath": "skills/auth/SKILL.md",
+      "computedHash": "eac30269e0216d5bcc1ccccefcb971d5b7a66d349dba40195032ad73d773169e"
+    },
+    "bootstrap": {
+      "source": "vercel-labs/vercel-plugin",
+      "sourceType": "github",
+      "skillPath": "skills/bootstrap/SKILL.md",
+      "computedHash": "e8d80b9ffe5f53c517faf4c4dc6836936a5eb8405a418bb46264ac99f657ba49"
+    },
+    "cdn-caching": {
+      "source": "vercel-labs/vercel-plugin",
+      "sourceType": "github",
+      "skillPath": "skills/cdn-caching/SKILL.md",
+      "computedHash": "ed0e8162578c23f2aa7b630ced473396097c0a89711560e9b0f8a17008fd6bb2"
+    },
+    "env-vars": {
+      "source": "vercel-labs/vercel-plugin",
+      "sourceType": "github",
+      "skillPath": "skills/env-vars/SKILL.md",
+      "computedHash": "8afaa26ba82573de93f099146caa2f568bb65fabe77ce2f24696762671a75100"
+    },
+    "framer-motion": {
+      "source": "mindrally/skills",
+      "sourceType": "github",
+      "skillPath": "framer-motion/SKILL.md",
+      "computedHash": "39a33b58952788812d305f7b676b86ee800d3d5be9752e10392435d7fae73d8a"
+    },
+    "motion": {
+      "source": "mindrally/skills",
+      "sourceType": "github",
+      "skillPath": "motion/SKILL.md",
+      "computedHash": "d7c0539701283262ad97226463e11a3785700f401463b51c6963006e03358e66"
+    },
+    "motion-react": {
+      "source": "pedronauck/skills",
+      "sourceType": "github",
+      "skillPath": "skills/community/motion-react/SKILL.md",
+      "computedHash": "746e49d0f010a977f9216f9e14d94eb77b82c412a544c70096f13688ee7351f0"
+    },
+    "nextjs": {
+      "source": "vercel-labs/vercel-plugin",
+      "sourceType": "github",
+      "skillPath": "skills/nextjs/SKILL.md",
+      "computedHash": "228adbce76c9036e79d1177e5b9fe05062569b8aea7effb89152f83f6d4603b2"
+    },
+    "plugin-audit": {
+      "source": "vercel-labs/vercel-plugin",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/plugin-audit/SKILL.md",
+      "computedHash": "a8f78cbfb1bdd9d721c6962d29fcce46308da07ed18e5311b1aa3b8da4deef45"
+    },
+    "react-best-practices": {
+      "source": "vercel-labs/vercel-plugin",
+      "sourceType": "github",
+      "skillPath": "skills/react-best-practices/SKILL.md",
+      "computedHash": "4f1da6469280a8293e3e46185e9ed5f477e79728bc02028a89ec3f4abf4fa82e"
+    },
+    "turbopack": {
+      "source": "vercel-labs/vercel-plugin",
+      "sourceType": "github",
+      "skillPath": "skills/turbopack/SKILL.md",
+      "computedHash": "f5369c5efd09055273f89c9ab390dd83f752474ae6a282b0de8dd02e310f51a7"
+    }
+  }
+}

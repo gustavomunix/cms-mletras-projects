@@ -87,8 +87,12 @@ export interface Config {
     defaultIDType: number;
   };
   fallbackLocale: null;
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    'header-announcement': HeaderAnnouncement;
+  };
+  globalsSelect: {
+    'header-announcement': HeaderAnnouncementSelect<false> | HeaderAnnouncementSelect<true>;
+  };
   locale: null;
   widgets: {
     collections: CollectionsWidget;
@@ -310,6 +314,60 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * Mensagens em loop na barra superior do header, cada uma com badge de tipo.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "header-announcement".
+ */
+export interface HeaderAnnouncement {
+  id: number;
+  /**
+   * Ordem aqui define a ordem do loop. Só mensagens marcadas como "Ativa" entram no loop.
+   */
+  messages?:
+    | {
+        enabled?: boolean | null;
+        badge?: ('novidade' | 'mensagem' | 'aviso' | 'alerta') | null;
+        text: string;
+        /**
+         * Opcional. Deixe em branco pra mensagem não ter botão/link.
+         */
+        ctaLabel?: string | null;
+        /**
+         * Ex: /novidades. Obrigatório quando o texto do botão está preenchido.
+         */
+        ctaHref?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Só importa quando há mais de uma mensagem ativa.
+   */
+  intervalSeconds?: number | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "header-announcement_select".
+ */
+export interface HeaderAnnouncementSelect<T extends boolean = true> {
+  messages?:
+    | T
+    | {
+        enabled?: T;
+        badge?: T;
+        text?: T;
+        ctaLabel?: T;
+        ctaHref?: T;
+        id?: T;
+      };
+  intervalSeconds?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

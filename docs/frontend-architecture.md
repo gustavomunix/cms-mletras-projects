@@ -12,6 +12,31 @@ Vanilla CSS, sem Tailwind. Duas camadas:
    BEM ou CSS Modules — Baseline widely available, Next.js não precisa
    de config nenhuma (é CSS puro).
 
+### ⚠️ Ordem de import em `layout.tsx` importa
+
+`styles.css` declara a ordem das layers uma única vez
+(`@layer fonts, reset, tokens, base, layout, utilities, components,
+overrides;`). Ordem de layer no CSS é definida pela **primeira
+aparição de cada nome no bundle inteiro** — não pela ordem em que os
+arquivos são escritos dentro de cada `@layer` block.
+
+Import de CSS de componente (`Header.css`, `Footer.css`, etc.) em
+`layout.tsx` **tem que vir depois** do `import './styles.css'`. Se
+vier antes, o `@layer components` do componente é a primeira layer
+declarada no documento inteiro (prioridade mais baixa), e `reset`/
+`base`/`utilities` passam a sobrescrever estilo de componente — quebra
+visual silenciosa, sem erro de build.
+
+```tsx
+// errado — components declara layer antes de styles.css existir
+import { Header } from '@/components/Header/Header'
+import './styles.css'
+
+// certo
+import './styles.css'
+import { Header } from '@/components/Header/Header'
+```
+
 ## Por que essa divisão
 
 Payload hoje só tem as collections `Users` e `Media`
@@ -56,7 +81,17 @@ componentes pequenos e isolados (`Header`, `Hero`, `FeatureGrid` +
 
 ## Estado atual
 
-- `page.tsx` só compõe: `Header` → `Hero` → `FeatureGrid` → `Footer`.
-- Nenhum dado ainda vem do Payload além do usuário autenticado
-  (`payload.auth`) — o resto é hardcoded em `page.tsx`, esperando a
+- `layout.tsx` renderiza `Header` e `Footer` fora do `<main>` — são
+  landmarks fixos do site (não conteúdo de página), então vivem no
+  layout raiz: `<Header /> <main>{children}</main> <Footer />`. Busca
+  de dados do Payload pro `Header` (usuário autenticado, aviso da
+  topbar) também mora no `layout.tsx`, não em `page.tsx`.
+- `page.tsx` só compõe o conteúdo da página: `Hero` → `FeatureGrid`.
+- `Footer` já aceita `footerLinks`/`social` via props (pronto pra virar
+  CMS-driven), mas `layout.tsx` hoje renderiza `<Footer />` sem passar
+  nada — usa os defaults hardcoded no próprio componente.
+- Payload já alimenta o usuário autenticado (`payload.auth`) e o aviso
+  da topbar do `Header` (global `header-announcement`) — ver
+  [`payload-cms.md`](./payload-cms.md) pro que é CMS-driven e o que
+  ainda é hardcoded (nav, redes/UFs, resto da home), esperando a
   collection `Pages`/blocks.

@@ -418,6 +418,10 @@
     flex-direction: column;
   }
 
+  :where(main) > section:first-of-type {
+    margin-block-start: var(--offset);
+  }
+
   /* containers — gap de conteúdo e blocos */
   :where(.container) > .block,
   :where(.container) {
