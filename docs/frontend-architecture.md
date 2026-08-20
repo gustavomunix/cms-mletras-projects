@@ -79,6 +79,68 @@ componentes pequenos e isolados (`Header`, `Hero`, `FeatureGrid` +
    nunca caminho relativo `../../` entre pastas de nível diferente —
    `@/*` mapeia pra `./src/*` no `tsconfig.json`.
 
+## Lint de CSS (Stylelint)
+
+Setup padrão recomendado pela skill `modern-css` (moderncss.ai), com um
+ajuste específico deste projeto (BEM). Já instalado e configurado —
+isto documenta como reproduzir/manter.
+
+- Pacotes (devDependencies): `stylelint`, `stylelint-config-standard`,
+  `stylelint-config-modern`.
+- Config: `stylelint.config.mjs` na raiz (projeto é `"type": "module"`,
+  por isso `export default` em vez de `module.exports`):
+  ```js
+  export default {
+    extends: ['stylelint-config-standard', 'stylelint-config-modern'],
+    referenceFiles: ['src/app/**/styles.css'],
+    rules: {
+      'no-unknown-custom-properties': true,
+      'no-unknown-custom-media': true,
+      'selector-class-pattern':
+        '^[a-z][a-z0-9]*(-[a-z0-9]+)*(__[a-z][a-z0-9]*(-[a-z0-9]+)*)?(--[a-z][a-z0-9]*(-[a-z0-9]+)*)?$',
+    },
+  }
+  ```
+- Script: `"lint:css": "cross-env NODE_OPTIONS=--no-deprecation stylelint \"src/**/*.css\""`
+  — separado do `lint` (ESLint), não roda junto.
+
+### Por que os overrides acima do padrão da skill
+
+- `referenceFiles` + `no-unknown-custom-properties`/`no-unknown-custom-media`
+  (opt-in, não vem ligado por padrão em nenhum dos dois configs): os
+  tokens do projeto vivem centralizados em `styles.css` (`@layer
+  tokens`) — ligar essas regras pega `var(--typo-de-nome)` em qualquer
+  componente, cruzando contra a fonte única.
+- `selector-class-pattern`: o `stylelint-config-standard` cobra
+  kebab-case puro por padrão e rejeita `_`. Esse projeto exige BEM-like
+  com `__`/`--` (ver [`design-system.md`](./design-system.md) e
+  checklist de componente acima) — sem esse override, todo `.bloco__elemento`
+  do projeto inteiro quebra o lint. O regex permite bloco kebab-case +
+  `__elemento` opcional + `--modificador` opcional, sempre kebab-case
+  dentro de cada parte.
+- Glob de `referenceFiles` usa `src/app/**/styles.css` (não o caminho
+  literal `src/app/(frontend)/styles.css`) porque `fast-glob` trata `(` `)`
+  como sintaxe de grupo — o caminho literal quebra a resolução.
+
+### Rodando
+
+```
+pnpm run lint:css          # só checa
+pnpm run lint:css --fix    # corrige o que dá (sintaxe, notação, ordem)
+```
+
+`--fix` resolve normalização de sintaxe (`display: flex` →
+`display: block flex`, `oklch(0.5 ...)` → `oklch(50% ...deg)`,
+`overflow-x` → `overflow-inline`, etc.) mas **não** resolve
+`no-descending-specificity` nem `no-duplicate-selectors` — esses pedem
+reescrita manual (reordenar blocos por especificidade crescente, ou
+mesclar seletores duplicados) preservando o comportamento visual.
+
+Ao criar um componente novo, `pnpm run lint:css` tem que passar sem
+erro antes do PR — é a rede de segurança automática pras regras da
+tabela Do/Do not em
+[`design-system.md`](./design-system.md#convenção-css-do--do-not).
+
 ## Estado atual
 
 - `layout.tsx` renderiza `Header` e `Footer` fora do `<main>` — são

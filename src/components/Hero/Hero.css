@@ -14,7 +14,7 @@
     }
 
     .hero-section__actions {
-      display: flex;
+      display: block flex;
       flex-wrap: wrap;
       justify-content: center;
       gap: var(--space-s);

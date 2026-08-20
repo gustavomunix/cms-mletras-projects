@@ -4,7 +4,7 @@
 /* fontes locais — Satoshi (body, 300–900 + italic) e Cabinet Grotesk (heading, 100–900), woff2 + woff fallback */
 @layer fonts {
   @font-face {
-    font-family: 'Satoshi';
+    font-family: Satoshi;
     src: url('../fonts/Satoshi-Variable.woff2') format('woff2'),
          url('../fonts/Satoshi-Variable.woff')  format('woff');
     font-weight: 300 900;
@@ -13,7 +13,7 @@
   }
 
   @font-face {
-    font-family: 'Satoshi';
+    font-family: Satoshi;
     src: url('../fonts/Satoshi-VariableItalic.woff2') format('woff2'),
          url('../fonts/Satoshi-VariableItalic.woff')  format('woff');
     font-weight: 300 900;
@@ -83,7 +83,7 @@
   }
 
   img, picture, video, canvas, svg {
-    display: block;
+    display: block flow;
     max-inline-size: 100%;
     block-size: auto;
   }
@@ -150,7 +150,6 @@
     --h4: clamp(1.125rem, 1.027rem + 0.435cqi, 1.375rem);           /* 18px → 22px */
     --h5: clamp(1rem, 0.951rem + 0.217cqi, 1.125rem);               /* 16px → 18px */
     --h6: clamp(0.875rem, 0.826rem + 0.217cqi, 1rem);               /* 14px → 16px */
-
     --text-line-height:    1.65;
     --heading-line-height: 1.15;
     --text-font-weight:    400;
@@ -184,7 +183,7 @@
     --max-width-m:         960px;   /* blog, catálogos */
     --max-width-s:         720px;   /* texto longo, sobre nós */
     --min-height:          200px;
-    --min-height-section:  60vh;
+    --min-height-section:  60vb;
     --content-width:       var(--container-width);
     --width-10: calc(var(--content-width) * 0.1);
     --width-20: calc(var(--content-width) * 0.2);
@@ -197,81 +196,81 @@
     --width-90: calc(var(--content-width) * 0.9);
 
     /* primary — #1f3c8f · derivados: lightness ±10%, hue/chroma fixos */
-    --primary:             oklch(0.388 0.142 265.5);
-    --primary-dark:        oklch(0.28 0.142 265.5);
-    --primary-ultra-dark:  oklch(0.18 0.12 265.5);
-    --primary-light:       oklch(0.55 0.14 265.5);
-    --primary-ultra-light: oklch(0.95 0.035 265.5);
+    --primary:             oklch(38.8% 0.142 265.5deg);
+    --primary-dark:        oklch(28% 0.142 265.5deg);
+    --primary-ultra-dark:  oklch(18% 0.12 265.5deg);
+    --primary-light:       oklch(55% 0.14 265.5deg);
+    --primary-ultra-light: oklch(95% 0.035 265.5deg);
 
     /* transparências de primary */
-    --primary-trans-10: oklch(0.388 0.142 265.5 / 10%);
-    --primary-trans-20: oklch(0.388 0.142 265.5 / 20%);
-    --primary-trans-30: oklch(0.388 0.142 265.5 / 30%);
-    --primary-trans-40: oklch(0.388 0.142 265.5 / 40%);
-    --primary-trans-50: oklch(0.388 0.142 265.5 / 50%);
-    --primary-trans-60: oklch(0.388 0.142 265.5 / 60%);
-    --primary-trans-70: oklch(0.388 0.142 265.5 / 70%);
-    --primary-trans-80: oklch(0.388 0.142 265.5 / 80%);
-    --primary-trans-90: oklch(0.388 0.142 265.5 / 90%);
+    --primary-trans-10: oklch(38.8% 0.142 265.5deg / 10%);
+    --primary-trans-20: oklch(38.8% 0.142 265.5deg / 20%);
+    --primary-trans-30: oklch(38.8% 0.142 265.5deg / 30%);
+    --primary-trans-40: oklch(38.8% 0.142 265.5deg / 40%);
+    --primary-trans-50: oklch(38.8% 0.142 265.5deg / 50%);
+    --primary-trans-60: oklch(38.8% 0.142 265.5deg / 60%);
+    --primary-trans-70: oklch(38.8% 0.142 265.5deg / 70%);
+    --primary-trans-80: oklch(38.8% 0.142 265.5deg / 80%);
+    --primary-trans-90: oklch(38.8% 0.142 265.5deg / 90%);
 
     /* shades numeradas — ratio WCAG contra #fff documentado */
-    --primary-500: oklch(0.45 0.15 265.5);  /* ratio ~5.4:1 — texto sobre fundo claro */
-    --primary-600: oklch(0.40 0.14 265.5);  /* ratio ~6.1:1 — botões */
-    --primary-700: oklch(0.35 0.14 265.5);  /* ratio ~7.5:1 — texto de alta ênfase */
+    --primary-500: oklch(45% 0.15 265.5deg);  /* ratio ~5.4:1 — texto sobre fundo claro */
+    --primary-600: oklch(40% 0.14 265.5deg);  /* ratio ~6.1:1 — botões */
+    --primary-700: oklch(35% 0.14 265.5deg);  /* ratio ~7.5:1 — texto de alta ênfase */
 
     /* accent — #e5473a · derivados: lightness ±10%, hue/chroma fixos */
-    --accent:              oklch(0.6219 0.1968 28.73);
-    --accent-dark:         oklch(0.50 0.1968 28.73);
-    --accent-ultra-dark:   oklch(0.38 0.18 28.73);
-    --accent-light:        oklch(0.74 0.14 28.73);
-    --accent-ultra-light:  oklch(0.95 0.04 28.73);
+    --accent:              oklch(62.19% 0.1968 28.73deg);
+    --accent-dark:         oklch(50% 0.1968 28.73deg);
+    --accent-ultra-dark:   oklch(38% 0.18 28.73deg);
+    --accent-light:        oklch(74% 0.14 28.73deg);
+    --accent-ultra-light:  oklch(95% 0.04 28.73deg);
 
     /* neutral — #8aa8b0 · hue 215.7, derivados ±~12% de lightness */
-    --neutral:             oklch(0.7117 0.035 215.7);
-    --neutral-dark:        oklch(0.56 0.038 215.7);
-    --neutral-ultra-dark:  oklch(0.42 0.04 215.7);
-    --neutral-light:       oklch(0.84 0.025 215.7);
-    --neutral-ultra-light: oklch(0.95 0.015 215.7);
+    --neutral:             oklch(71.17% 0.035 215.7deg);
+    --neutral-dark:        oklch(56% 0.038 215.7deg);
+    --neutral-ultra-dark:  oklch(42% 0.04 215.7deg);
+    --neutral-light:       oklch(84% 0.025 215.7deg);
+    --neutral-ultra-light: oklch(95% 0.015 215.7deg);
 
     /* base — #303742 · hue 259.4, baixo chroma, derivados ±~10% */
-    --base:                oklch(0.3348 0.0217 259.4);
-    --base-dark:           oklch(0.22 0.02 259.4);
-    --base-ultra-dark:     oklch(0.15 0.018 259.4);
-    --base-light:          oklch(0.58 0.022 259.4);
-    --base-ultra-light:    oklch(0.97 0.005 259.4);
+    --base:                oklch(33.48% 0.0217 259.4deg);
+    --base-dark:           oklch(22% 0.02 259.4deg);
+    --base-ultra-dark:     oklch(15% 0.018 259.4deg);
+    --base-light:          oklch(58% 0.022 259.4deg);
+    --base-ultra-light:    oklch(97% 0.005 259.4deg);
 
     /* transparências de base-ultra-dark */
-    --base-ultra-dark-trans-10: oklch(0.15 0.018 259.4 / 10%);
-    --base-ultra-dark-trans-20: oklch(0.15 0.018 259.4 / 20%);
-    --base-ultra-dark-trans-30: oklch(0.15 0.018 259.4 / 30%);
-    --base-ultra-dark-trans-40: oklch(0.15 0.018 259.4 / 40%);
-    --base-ultra-dark-trans-50: oklch(0.15 0.018 259.4 / 50%);
-    --base-ultra-dark-trans-60: oklch(0.15 0.018 259.4 / 60%);
-    --base-ultra-dark-trans-70: oklch(0.15 0.018 259.4 / 70%);
-    --base-ultra-dark-trans-80: oklch(0.15 0.018 259.4 / 80%);
-    --base-ultra-dark-trans-90: oklch(0.15 0.018 259.4 / 90%);
+    --base-ultra-dark-trans-10: oklch(15% 0.018 259.4deg / 10%);
+    --base-ultra-dark-trans-20: oklch(15% 0.018 259.4deg / 20%);
+    --base-ultra-dark-trans-30: oklch(15% 0.018 259.4deg / 30%);
+    --base-ultra-dark-trans-40: oklch(15% 0.018 259.4deg / 40%);
+    --base-ultra-dark-trans-50: oklch(15% 0.018 259.4deg / 50%);
+    --base-ultra-dark-trans-60: oklch(15% 0.018 259.4deg / 60%);
+    --base-ultra-dark-trans-70: oklch(15% 0.018 259.4deg / 70%);
+    --base-ultra-dark-trans-80: oklch(15% 0.018 259.4deg / 80%);
+    --base-ultra-dark-trans-90: oklch(15% 0.018 259.4deg / 90%);
 
     /* white / black */
-    --white: oklch(1 0 0);
-    --white-trans-10: oklch(1 0 0 / 10%);
-    --white-trans-20: oklch(1 0 0 / 20%);
-    --white-trans-30: oklch(1 0 0 / 30%);
-    --white-trans-40: oklch(1 0 0 / 40%);
-    --white-trans-50: oklch(1 0 0 / 50%);
-    --white-trans-60: oklch(1 0 0 / 60%);
-    --white-trans-70: oklch(1 0 0 / 70%);
-    --white-trans-80: oklch(1 0 0 / 80%);
-    --white-trans-90: oklch(1 0 0 / 90%);
-    --black: oklch(0.15 0 0);
+    --white: oklch(100% 0 0deg);
+    --white-trans-10: oklch(100% 0 0deg / 10%);
+    --white-trans-20: oklch(100% 0 0deg / 20%);
+    --white-trans-30: oklch(100% 0 0deg / 30%);
+    --white-trans-40: oklch(100% 0 0deg / 40%);
+    --white-trans-50: oklch(100% 0 0deg / 50%);
+    --white-trans-60: oklch(100% 0 0deg / 60%);
+    --white-trans-70: oklch(100% 0 0deg / 70%);
+    --white-trans-80: oklch(100% 0 0deg / 80%);
+    --white-trans-90: oklch(100% 0 0deg / 90%);
+    --black: oklch(15% 0 0deg);
 
     /* border — acromática, #dedede */
-    --border-color: oklch(0.9006 0 0);
+    --border-color: oklch(90.06% 0 0deg);
 
     /* surface tokens — aliases de fundo, troca de tema sem caçar seletor */
     --surface-deep:  var(--primary-ultra-dark);  /* hero escuro, seções CTA dark */
     --surface-page:  var(--white);               /* fundo padrão da página */
     --surface-card:  var(--base-ultra-light);     /* cards e seções claras */
-    --surface-card2: oklch(0.96 0.01 215.7);      /* cards com toque do neutral azulado */
+    --surface-card2: oklch(96% 0.01 215.7deg);      /* cards com toque do neutral azulado */
 
     /* aliases adicionais */
     --bg:      var(--surface-page);
@@ -315,11 +314,11 @@
 
 /* comportamento base e tipografia */
 @layer base {
-
   /* scroll */
   [id] {
-    scroll-margin-top: calc(var(--offset) / 1.6);
+    scroll-margin-block-start: calc(var(--offset) / 1.6);
   }
+
   html {
     font-size: 100%;
     scroll-behavior: smooth;
@@ -329,6 +328,7 @@
   :focus {
     outline: none;
   }
+
   :focus-visible {
     outline: solid 1px var(--primary);
     outline-offset: 5px;
@@ -340,7 +340,7 @@
 
   /* navegação — sem bullet, sem depender de classe */
   nav ul, nav ol {
-    display: flex;
+    display: block flex;
     flex-wrap: wrap;
     justify-content: center;
     list-style: none;
@@ -350,12 +350,10 @@
   header {
     max-inline-size: 100cqi;
   }
-  body {
-    overflow-x: clip;
-  }
 
   /* texto base do body */
   body {
+    overflow-inline: clip;
     font-family: var(--font-body);
     font-size: var(--text-m);
     line-height: var(--text-line-height);
@@ -368,6 +366,7 @@
   :where(span) {
     line-height: var(--text-line-height);
   }
+
   :where(p) {
     font-weight: var(--text-font-weight);
     text-wrap: pretty; /* evita palavras órfãs — progressive enhancement, ignorado onde não suportado */
@@ -387,7 +386,6 @@
   h3 { font-size: var(--h3); }
   h4 { font-size: var(--h4); }
   h5 { font-size: var(--h5); }
-  h6 { font-size: var(--h6); }
 
   /* h4-h5 — mesmo tamanho do body mas peso 600 distingue a hierarquia */
   h4, h5 {
@@ -396,6 +394,7 @@
 
   /* h6 — overline/label pattern: uppercase + tracking */
   h6 {
+    font-size: var(--h6);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -405,16 +404,15 @@
 
 /* containers e sections */
 @layer layout {
-
   /* seções — padding e gap */
   :where(section:not(section section)) {
-    padding-block-start: var(--space-section);
-    padding-block-end: var(--space-xl);
+    padding-block: var(--space-section) var(--space-xl);
     padding-inline: var(--space-m);
   }
+
   section:where(:not(.shape-divider)) {
     gap: var(--container-gap);
-    display: flex;
+    display: block flex;
     flex-direction: column;
   }
 
@@ -426,7 +424,7 @@
   :where(.container) > .block,
   :where(.container) {
     gap: var(--content-gap);
-    display: flex;
+    display: block flex;
     flex-direction: column;
   }
 
@@ -434,10 +432,9 @@
 
 /* links de conteúdo editorial + display modifiers */
 @layer components {
-
   /* links sem classe (conteúdo editorial) */
-  .text-content a:not([class]),
-  label a {
+  label a,
+  .text-content a:not([class]) {
     text-decoration-line: underline;
     text-decoration-color: var(--primary);
     text-underline-offset: 0.2em;
@@ -470,11 +467,10 @@
 
 /* classes utilitárias */
 @layer utilities {
-
   /* .btn .btn-{cor} .btn-{tamanho} — tamanho default m, cor obrigatória */
 
   .btn {
-    display: inline-flex;
+    display: inline flex;
     align-items: center;
     justify-content: center;
     gap: var(--space-xs);
