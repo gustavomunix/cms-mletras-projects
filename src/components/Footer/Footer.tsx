@@ -17,7 +17,11 @@ type FooterProps = {
 }
 
 const DEFAULT_SOCIAL: SocialItem[] = [
-  { label: 'LinkedIn', url: 'https://linkedin.com/company/multiverso-das-letras/', icon: 'linkedin' },
+  {
+    label: 'LinkedIn',
+    url: 'https://linkedin.com/company/multiverso-das-letras/',
+    icon: 'linkedin',
+  },
   { label: 'Instagram', url: 'https://instagram.com/multiversodasletras', icon: 'instagram' },
 ]
 
@@ -27,8 +31,18 @@ export function Footer({ footerLinks = [], social = DEFAULT_SOCIAL }: FooterProp
       <div className="site-footer__body">
         <div className="site-footer__inner">
           <div className="site-footer__brand">
-            <a href="/" className="site-footer__logo" aria-label="Multiverso das Letras — Página inicial">
-              <img src="/assets/icons/logo-color.svg" alt="Multiverso das Letras" width={220} height={59} loading="lazy" />
+            <a
+              href="/"
+              className="site-footer__logo"
+              aria-label="Multiverso das Letras — Página inicial"
+            >
+              <img
+                src="/assets/icons/logo.svg"
+                alt="Multiverso das Letras"
+                width={220}
+                height={59}
+                loading="lazy"
+              />
             </a>
 
             <p className="site-footer__tagline">O começo, o meio e o infinito.</p>
@@ -39,7 +53,11 @@ export function Footer({ footerLinks = [], social = DEFAULT_SOCIAL }: FooterProp
               Bela Vista · São Paulo – SP · 01310-300
             </address>
 
-            <ul className="site-footer__social" role="list" aria-label="Redes sociais da Multiverso das Letras">
+            <ul
+              className="site-footer__social"
+              role="list"
+              aria-label="Redes sociais da Multiverso das Letras"
+            >
               {social.map((s) => (
                 <li key={s.icon}>
                   <a
@@ -49,7 +67,13 @@ export function Footer({ footerLinks = [], social = DEFAULT_SOCIAL }: FooterProp
                     className="social-link"
                     aria-label={`${s.label} (abre em nova aba)`}
                   >
-                    <img src={`/assets/icons/${s.icon}.svg`} width={18} height={18} alt="" aria-hidden="true" />
+                    <img
+                      src={`/assets/icons/${s.icon}.svg`}
+                      width={18}
+                      height={18}
+                      alt=""
+                      aria-hidden="true"
+                    />
                   </a>
                 </li>
               ))}
@@ -109,7 +133,8 @@ export function Footer({ footerLinks = [], social = DEFAULT_SOCIAL }: FooterProp
       <div className="site-footer__bar">
         <div className="site-footer__bar-inner">
           <p className="site-footer__bar-copy">
-            &copy; {new Date().getFullYear()} Grupo Multiverso das Letras. Todos os direitos reservados.
+            &copy; {new Date().getFullYear()} Grupo Multiverso das Letras. Todos os direitos
+            reservados.
           </p>
           <nav aria-label="Links institucionais do rodapé">
             <ul className="site-footer__bar-nav" role="list">
