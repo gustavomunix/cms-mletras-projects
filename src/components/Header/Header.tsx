@@ -21,8 +21,6 @@ import {
   List,
   MagnifyingGlass,
   MapPin,
-  Pause,
-  Play,
   X,
 } from '@phosphor-icons/react'
 
@@ -195,7 +193,6 @@ export function Header({
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isAccountOpen, setIsAccountOpen] = useState(false)
   const [announceIndex, setAnnounceIndex] = useState(0)
-  const [isAnnouncePaused, setIsAnnouncePaused] = useState(false)
   const isAnnouncePausedRef = useRef(false)
 
   const headerRef = useRef<HTMLElement>(null)
@@ -282,7 +279,7 @@ export function Header({
   }, [isSearchOpen])
 
   useEffect(() => {
-    if (announcements.length <= 1 || isAnnouncePaused) return
+    if (announcements.length <= 1) return
 
     const id = window.setInterval(() => {
       if (isAnnouncePausedRef.current) return
@@ -290,7 +287,7 @@ export function Header({
     }, announcementIntervalSeconds * 1000)
 
     return () => window.clearInterval(id)
-  }, [announcements.length, announcementIntervalSeconds, isAnnouncePaused])
+  }, [announcements.length, announcementIntervalSeconds])
 
   useEffect(() => {
     if (!isOpen) return
@@ -489,22 +486,6 @@ export function Header({
                       </motion.div>
                     )}
                   </AnimatePresence>
-
-                  {announcements.length > 1 ? (
-                    <button
-                      type="button"
-                      className="site-header__announce-toggle"
-                      aria-pressed={isAnnouncePaused}
-                      aria-label={isAnnouncePaused ? 'Retomar avisos' : 'Pausar avisos'}
-                      onClick={() => setIsAnnouncePaused((paused) => !paused)}
-                    >
-                      {isAnnouncePaused ? (
-                        <Play size={12} weight="fill" aria-hidden="true" />
-                      ) : (
-                        <Pause size={12} weight="fill" aria-hidden="true" />
-                      )}
-                    </button>
-                  ) : null}
                 </div>
               ) : null}
 
