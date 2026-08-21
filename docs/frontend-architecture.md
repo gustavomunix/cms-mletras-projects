@@ -162,11 +162,43 @@ src/app/(frontend)/
       page.tsx          — conteúdo da home (Hero + FeatureGrid).
 ```
 
-Página nova que precisa de login: criar pasta dentro de `(app)/` — o
-guard e o chrome (`Header`/`Footer`) já vêm de graça do layout do
-grupo, não duplicar a checagem de `payload.auth` em cada `page.tsx`.
-Página pública nova (sem login): criar direto em `(frontend)/`, fora do
-grupo `(app)`.
+Página nova: criar pasta dentro de `(app)/` — o guard e o chrome
+(`Header`/`Footer`) já vêm de graça do layout do grupo, não duplicar a
+checagem de `payload.auth` em cada `page.tsx`. O frontend da equipe só
+existe logado; `/` é o gate de login, não uma página pública.
+
+O `Header` é o chrome de homepage de máquina da empresa: aviso interno
+(kicker + métrica + texto; `href` opcional torna a linha inteira o
+link, sem botão de CTA), relógio + clima no centro da top-bar, busca
+sempre visível (`GET /busca`, sem backend ainda) e chip de sessão
+(iniciais, e-mail, setor, Sair) no lugar do antigo “Fale conosco”. Logo
+aponta pra `/inicio`.
+
+A prop `nav` / `DEFAULT_NAV` (placeholder vazio pra Sobre/Catálogo/Blog)
+foi removida — sem collection de navegação no horizonte, o `<nav>`
+vazio só quebrava acessibilidade no mobile (o dropdown **Redes**
+morava dentro de um container `@container (width >= 48rem)`, então
+Redes/UFs eram inalcançáveis abaixo de 768px). Hoje o dropdown Redes
+(`DEFAULT_REDES`) vive num `.site-header__nav-cluster` (flex, sempre
+visível) ao lado do toggle do offcanvas — mesmo elemento em qualquer
+largura. Se voltar a existir navegação principal, criar de novo como
+elemento próprio nesse cluster, não reintroduzir a prop `nav` vazia.
+
+Clima: o layout SSR manda o tempo do escritório (Open-Meteo,
+Consolação / Av. Paulista 2300). No client, `HeaderStatus` pede
+geolocalização **sem `timeout`** — no Chrome o relógio do timeout
+inclui o diálogo Permitir/Bloquear, então 3s fazia o pedido falhar
+antes do clique e o fallback SSR ficava na tela mesmo com permissão
+concedida. `http://localhost` é contexto seguro; geolocation em
+localhost **não** é o bloqueio. Com coordenadas, busca o forecast nas
+coords reais (`timezone=auto`) e o bairro/cidade via reverse geocode
+(BigDataCloud, `localityLanguage=pt`). O relógio troca de fuso junto:
+`WeatherSnapshot.timezone` guarda o IANA name que o Open-Meteo resolveu
+pra aquela coordenada, e `HeaderStatus` formata a hora nesse fuso — sem
+isso o relógio ficava preso em `America/Sao_Paulo` enquanto o rótulo de
+cidade mudava pra onde o usuário estava (`14:32` de SP ao lado de
+"Manaus"). Se o usuário recusar ou o GPS não existir, permanece o
+clima e o fuso do escritório.
 
 `LoginForm` (`src/components/LoginForm/`) mostra `logo-color.svg`
 (`public/assets/icons/`, mesmo arquivo do `Header`/`Footer` em fundo
@@ -176,11 +208,10 @@ de auth, não precisa de lógica extra de sessão no front. Erro de
 credencial mostra a mensagem que o Payload devolve
 (`data.errors[0].message`, já em pt-BR), sem `alert()`.
 
-**Logout**: botão "Sair" no `Header` (só renderiza quando `userEmail`
-existe) — `onClick` faz POST pra `/api/users/logout` (REST nativo,
-limpa o cookie/sessão no Payload) e depois `router.push('/')` +
-`router.refresh()`. `/admin` (painel do Payload) já tem logout próprio
-embutido, não precisa de nada custom lá.
+**Logout**: o layout `(app)` sempre passa `userEmail` + `userSetor`. O
+chip na navbar (e de novo no offcanvas, no telefone) faz POST pra
+`/api/users/logout` e depois `router.push('/')` + `router.refresh()`.
+`/admin` já tem logout próprio, não precisa de nada custom lá.
 
 ## Lint de JS/TS (ESLint) — Next 16 usa flat config nativo
 

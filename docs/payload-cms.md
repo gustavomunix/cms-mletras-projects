@@ -30,31 +30,37 @@ padrão** pra um novo pedaço de conteúdo.
 ### Avisos do header (`header-announcement`)
 
 - **Onde**: `src/globals/HeaderAnnouncement.ts`.
-- **O quê**: lista de mensagens em loop na topbar do `Header`
-  (`site-header__announce`), cada uma com tipo/badge (`novidade` /
-  `mensagem` / `aviso` / `alerta`), texto, e um **CTA opcional** (texto de
-  botão + link). Sem CTA, a mensagem é só texto informativo — não força
-  link nenhum.
-- **Campos** (dentro do array `messages`): `enabled` (checkbox, entra ou
-  não no loop), `badge` (select), `text` (obrigatório), `ctaLabel` +
-  `ctaHref` (opcionais — `ctaHref` só aparece no admin quando `ctaLabel`
-  está preenchido, e é obrigatório nesse caso via `validate`). Fora do
-  array: `intervalSeconds` (2–30s, só aparece com mais de 1 mensagem).
+- **O quê**: faixa interna no topo do `Header` (`site-header__announce`).
+  Comunicação da operação — palestra, parceria, projeto de time,
+  lembrete, número da semana. Sem tipos pré-definidos e **sem botão de
+  CTA**: se o aviso tem destino, a linha inteira é o link.
+- **Campos** (dentro do array `messages`): `enabled` (checkbox), `kicker`
+  (text livre, max 32, opcional — `Palestra`, `Editorial`, `Parceria`),
+  `metric` (text livre, max 16, opcional — `+18%`, `12 mil`, `14h`),
+  `text` (obrigatório), `href` (opcional). Fora do array:
+  `intervalSeconds` (2–30s, default 8, só aparece com mais de 1 aviso).
 - **Loop no front**: `Header.tsx` guarda um índice (`announceIndex`) e
   avança de tempos em tempos (`setInterval`, respeitando
   `intervalSeconds`); troca de mensagem anima com `AnimatePresence`
-  (`motion/react`). Roda só se houver mais de 1 mensagem ativa. Pausa
-  sozinho no hover/focus do bloco (`isAnnouncePausedRef`) — acessibilidade
-  (WCAG 2.2.2, conteúdo que atualiza automaticamente precisa dar pra
-  pausar). Container tem `role="status"` pra leitor de tela anunciar a
-  troca.
+  (`motion/react`). Roda só se houver mais de 1 aviso ativo. Pausa no
+  hover/focus do bloco (`isAnnouncePausedRef`, transitório) e também via
+  um botão explícito (ícone Play/Pause, `aria-pressed`) sempre focável —
+  hover/focus por si só não bastava pro WCAG 2.2.2 (conteúdo que
+  atualiza automaticamente precisa dar pra pausar), porque um aviso sem
+  `href` não tem nenhum elemento focável dentro do bloco pra receber o
+  foco do teclado. Container tem `role="status"` pra leitor de tela
+  anunciar a troca.
 - **Fluxo**: `src/app/(frontend)/(app)/layout.tsx` chama
   `payload.findGlobal({ slug: 'header-announcement' })`, filtra
   `messages` por `enabled && text`, mapeia pra
-  `{ label, badge, ctaLabel, ctaHref }` e passa como prop `announcements`
+  `{ text, kicker, metric, href }` e passa como prop `announcements`
   (array) + `announcementIntervalSeconds` pro `Header`. Array vazio =
-  nada renderiza.
+  a faixa de aviso some; relógio/clima continuam.
 - **Editar conteúdo**: `/admin` → Globals → "Avisos do Header".
+- **Schema**: `badge` / `ctaLabel` / `ctaHref` saíram. Em dev o push do
+  SQLite recria colunas — avisos locais antigos perdem o select de tipo
+  (era enum inútil). Mesma pendência de migração de produção já anotada
+  abaixo.
 
 ### Setor do usuário (`Users.setor`)
 
@@ -84,9 +90,16 @@ padrão** pra um novo pedaço de conteúdo.
   ou `redes`) com campos `label`, `href`/`slug`, `order`, pra alimentar
   esse dropdown via `layout.tsx` do mesmo jeito que o aviso do header
   (também buscado em `layout.tsx`, não em `page.tsx`).
-- Nav principal (`Sobre`, `Catálogo`, `Blog`, `Contato`, CTA) e links
-  sociais (LinkedIn/Instagram) — ainda hardcoded em `DEFAULT_NAV` /
-  `DEFAULT_SOCIAL` no mesmo arquivo.
+- Nav principal: a prop `nav`/`DEFAULT_NAV` (placeholder vazio pra
+  Sobre/Catálogo/Blog) foi removida do `Header` — ficava presa num
+  container `@container (width >= 48rem)` que também escondia o
+  dropdown Redes abaixo de 768px. Se voltar a existir navegação
+  principal via CMS, criar como elemento próprio dentro do
+  `.site-header__nav-cluster` (sempre visível, ao lado do toggle do
+  offcanvas), não reintroduzir a prop vazia. Links sociais
+  (LinkedIn/Instagram) ainda hardcoded em `DEFAULT_SOCIAL`. Contato /
+  "Fale conosco" saíram: o site só existe na área logada; a conta
+  (e-mail + setor + Sair) ocupa o eixo direito da top-bar.
 - Collection `Pages`/blocks pra home — ver
   [`frontend-architecture.md`](./frontend-architecture.md), ainda não
   existe.
