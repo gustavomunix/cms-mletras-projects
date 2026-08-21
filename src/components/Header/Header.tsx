@@ -1,8 +1,11 @@
 'use client'
 
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useRef, useState, type RefObject } from 'react'
 import {
   AnimatePresence,
+  MotionConfig,
   motion,
   useMotionValueEvent,
   useReducedMotion,
@@ -21,6 +24,15 @@ import {
   MapPin,
   X,
 } from '@phosphor-icons/react'
+
+import {
+  dropdownVariants,
+  fades,
+  panelInlineEnd,
+  panelItemInlineEnd,
+  scrimVariants,
+  travel,
+} from '@/lib/motion'
 
 import './Header.css'
 
@@ -68,7 +80,11 @@ const DEFAULT_NAV: NavItem[] = [
 ]
 
 const DEFAULT_SOCIAL: SocialItem[] = [
-  { label: 'LinkedIn', url: 'https://linkedin.com/company/multiverso-das-letras/', icon: 'linkedin' },
+  {
+    label: 'LinkedIn',
+    url: 'https://linkedin.com/company/multiverso-das-letras/',
+    icon: 'linkedin',
+  },
   { label: 'Instagram', url: 'https://instagram.com/multiversodasletras', icon: 'instagram' },
 ]
 
@@ -142,6 +158,16 @@ export function Header({
   announcementIntervalSeconds = DEFAULT_ANNOUNCEMENT_INTERVAL_SECONDS,
   userEmail,
 }: HeaderProps) {
+  const router = useRouter()
+
+  async function handleLogout() {
+    try {
+      await fetch('/api/users/logout', { method: 'POST' })
+    } catch {}
+    router.push('/')
+    router.refresh()
+  }
+
   const [isOpen, setIsOpen] = useState(false)
   const [isRedesOpen, setIsRedesOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
@@ -149,7 +175,7 @@ export function Header({
   const isAnnouncePausedRef = useRef(false)
 
   const headerRef = useRef<HTMLElement>(null)
-  const panelRef = useRef<HTMLDivElement>(null)
+  const panelRef = useRef<HTMLElement>(null)
   const toggleRef = useRef<HTMLButtonElement>(null)
   const redesRef = useRef<HTMLLIElement>(null)
   const searchRef = useRef<HTMLFormElement>(null)
@@ -280,7 +306,7 @@ export function Header({
   const ctaItem = nav.find((item) => item.cta)
 
   return (
-    <>
+    <MotionConfig reducedMotion="user">
       <a href="#main" className="skip-link">
         Pular para o conteúdo principal
       </a>
@@ -305,13 +331,15 @@ export function Header({
                         key={announceIndex}
                         className="site-header__announce"
                         data-badge={current.badge ?? 'novidade'}
-                        initial={{ opacity: 0, y: 4 }}
+                        initial={{ opacity: 0, y: travel.nudge }}
                         animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -4 }}
-                        transition={{ duration: 0.25 }}
+                        exit={{ opacity: 0, y: -travel.nudge }}
+                        transition={fades.crossfade}
                       >
                         <span className="site-header__announce-dot" aria-hidden="true" />
-                        <span className="site-header__announce-label">{BADGE_LABELS[current.badge ?? 'novidade']}</span>
+                        <span className="site-header__announce-label">
+                          {BADGE_LABELS[current.badge ?? 'novidade']}
+                        </span>
                         <span className="site-header__announce-text">{current.label}</span>
                         {current.ctaLabel && current.ctaHref && (
                           <a href={current.ctaHref} className="site-header__announce-cta">
@@ -325,7 +353,14 @@ export function Header({
               </div>
             )}
 
-            {userEmail && <p className="site-header__user">Olá, {userEmail}</p>}
+            {userEmail && (
+              <div className="site-header__account">
+                <p className="site-header__user">Olá, {userEmail}</p>
+                <button type="button" className="site-header__logout" onClick={handleLogout}>
+                  Sair
+                </button>
+              </div>
+            )}
 
             <form
               className={`site-header__search${isSearchOpen ? ' is-open' : ''}`}
@@ -380,7 +415,11 @@ export function Header({
         <div className="site-header__navbar">
           <div className="site-header__navbar-inner">
             <div className="site-header__logo">
-              <a href="/" className="site-logo" aria-label="Multiverso das Letras — Página inicial">
+              <Link
+                href="/"
+                className="site-logo"
+                aria-label="Multiverso das Letras — Página inicial"
+              >
                 <img
                   src="/assets/icons/logo.svg"
                   alt="Multiverso das Letras"
@@ -392,7 +431,7 @@ export function Header({
                   className="site-logo__img site-logo__img--color"
                   aria-hidden="true"
                 />
-              </a>
+              </Link>
             </div>
 
             <nav className="site-nav" aria-label="Navegação principal">
@@ -415,7 +454,12 @@ export function Header({
                     onClick={() => setIsRedesOpen((v) => !v)}
                   >
                     <span className="site-nav__label">Redes</span>
-                    <CaretDown className="site-nav__redes-chevron" size={12} weight="bold" aria-hidden="true" />
+                    <CaretDown
+                      className="site-nav__redes-chevron"
+                      size={12}
+                      weight="bold"
+                      aria-hidden="true"
+                    />
                   </button>
 
                   <AnimatePresence>
@@ -425,10 +469,10 @@ export function Header({
                         className="site-nav__redes-panel"
                         role="menu"
                         aria-label="Redes públicas e projetos regionais da Multiverso"
-                        initial={{ opacity: 0, scale: 0.94, y: -6 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.96, y: -4 }}
-                        transition={{ type: 'spring', stiffness: 420, damping: 32 }}
+                        variants={dropdownVariants}
+                        initial="hidden"
+                        animate="visible"
+                        exit="exit"
                       >
                         <a
                           href={redes[0].href}
@@ -487,7 +531,7 @@ export function Header({
                       initial={{ rotate: -90, opacity: 0 }}
                       animate={{ rotate: 0, opacity: 1 }}
                       exit={{ rotate: 90, opacity: 0 }}
-                      transition={{ duration: 0.18 }}
+                      transition={fades.swap}
                     >
                       <X size={22} weight="bold" aria-hidden="true" />
                     </motion.span>
@@ -498,7 +542,7 @@ export function Header({
                       initial={{ rotate: 90, opacity: 0 }}
                       animate={{ rotate: 0, opacity: 1 }}
                       exit={{ rotate: -90, opacity: 0 }}
-                      transition={{ duration: 0.18 }}
+                      transition={fades.swap}
                     >
                       <List size={22} weight="bold" aria-hidden="true" />
                     </motion.span>
@@ -510,26 +554,38 @@ export function Header({
         </div>
       </header>
 
-      <div
-        className={`nav-overlay${isOpen ? ' is-open' : ''}`}
+      <motion.div
+        className="nav-overlay"
+        variants={scrimVariants}
+        initial="closed"
+        animate={isOpen ? 'open' : 'closed'}
         aria-hidden={!isOpen}
+        inert={!isOpen}
         onClick={closeMenu}
       />
 
-      <aside
-        className={`nav-offcanvas${isOpen ? ' is-open' : ''}`}
+      <motion.aside
+        className="nav-offcanvas"
         id="nav-offcanvas"
         role="dialog"
         aria-modal="true"
         aria-label="Menu de navegação"
         aria-hidden={!isOpen}
+        inert={!isOpen}
         ref={panelRef}
+        variants={panelInlineEnd}
+        initial="closed"
+        animate={isOpen ? 'open' : 'closed'}
       >
         <div className="nav-offcanvas__inner">
           <div className="nav-offcanvas__hd">
-            <a href="/" className="nav-offcanvas__logo" aria-label="Multiverso das Letras — Página inicial">
+            <Link
+              href="/"
+              className="nav-offcanvas__logo"
+              aria-label="Multiverso das Letras — Página inicial"
+            >
               <img src="/assets/icons/logo.svg" alt="Multiverso das Letras" height={36} />
-            </a>
+            </Link>
             <button
               className="nav-offcanvas__close"
               type="button"
@@ -543,17 +599,22 @@ export function Header({
           <nav className="nav-offcanvas__nav" aria-label="Menu principal">
             <ul role="list">
               {navLinks.map((item) => (
-                <li key={item.href}>
+                <motion.li key={item.href} variants={panelItemInlineEnd}>
                   <a href={item.href}>
                     <span>{item.label}</span>
-                    <ArrowRight className="nav-offcanvas__arrow" size={20} weight="regular" aria-hidden="true" />
+                    <ArrowRight
+                      className="nav-offcanvas__arrow"
+                      size={20}
+                      weight="regular"
+                      aria-hidden="true"
+                    />
                   </a>
-                </li>
+                </motion.li>
               ))}
             </ul>
           </nav>
 
-          <div className="nav-offcanvas__ft">
+          <motion.div className="nav-offcanvas__ft" variants={panelItemInlineEnd}>
             {ctaItem && (
               <a href={ctaItem.href} className="btn btn-acc nav-offcanvas__cta">
                 {ctaItem.label}
@@ -580,9 +641,9 @@ export function Header({
                 )
               })}
             </ul>
-          </div>
+          </motion.div>
         </div>
-      </aside>
-    </>
+      </motion.aside>
+    </MotionConfig>
   )
 }

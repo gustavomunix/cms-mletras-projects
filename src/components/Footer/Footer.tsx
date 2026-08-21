@@ -1,3 +1,8 @@
+import Link from 'next/link'
+import * as motion from 'motion/react-client'
+
+import { containerVariants, fadeUp, inViewOnce } from '@/lib/motion'
+
 import './Footer.css'
 
 type FooterLink = {
@@ -29,9 +34,15 @@ export function Footer({ footerLinks = [], social = DEFAULT_SOCIAL }: FooterProp
   return (
     <footer className="site-footer" role="contentinfo" aria-label="Rodapé">
       <div className="site-footer__body">
-        <div className="site-footer__inner">
-          <div className="site-footer__brand">
-            <a
+        <motion.div
+          className="site-footer__inner"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={inViewOnce}
+        >
+          <motion.div className="site-footer__brand" variants={fadeUp}>
+            <Link
               href="/"
               className="site-footer__logo"
               aria-label="Multiverso das Letras — Página inicial"
@@ -43,7 +54,7 @@ export function Footer({ footerLinks = [], social = DEFAULT_SOCIAL }: FooterProp
                 height={59}
                 loading="lazy"
               />
-            </a>
+            </Link>
 
             <p className="site-footer__tagline">O começo, o meio e o infinito.</p>
 
@@ -78,12 +89,12 @@ export function Footer({ footerLinks = [], social = DEFAULT_SOCIAL }: FooterProp
                 </li>
               ))}
             </ul>
-          </div>
+          </motion.div>
 
-          <div className="site-footer__divider" aria-hidden="true" />
+          <motion.div className="site-footer__divider" aria-hidden="true" variants={fadeUp} />
 
-          {footerLinks.length > 0 && (
-            <div className="site-footer__group">
+          {footerLinks.length > 0 ? (
+            <motion.div className="site-footer__group" variants={fadeUp}>
               <p className="site-footer__group-title">Conheça as empresas do Grupo</p>
 
               <ul className="site-footer__group-links" role="list">
@@ -125,13 +136,19 @@ export function Footer({ footerLinks = [], social = DEFAULT_SOCIAL }: FooterProp
                   Fale com nossa equipe
                 </a>
               </div>
-            </div>
-          )}
-        </div>
+            </motion.div>
+          ) : null}
+        </motion.div>
       </div>
 
       <div className="site-footer__bar">
-        <div className="site-footer__bar-inner">
+        <motion.div
+          className="site-footer__bar-inner"
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={inViewOnce}
+        >
           <p className="site-footer__bar-copy">
             &copy; {new Date().getFullYear()} Grupo Multiverso das Letras. Todos os direitos
             reservados.
@@ -161,7 +178,7 @@ export function Footer({ footerLinks = [], social = DEFAULT_SOCIAL }: FooterProp
               </li>
             </ul>
           </nav>
-        </div>
+        </motion.div>
       </div>
     </footer>
   )

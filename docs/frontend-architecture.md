@@ -11,6 +11,9 @@ Vanilla CSS, sem Tailwind. Duas camadas:
    (.classe-raiz) { ... } }`. `@scope` isola o seletor sem precisar de
    BEM ou CSS Modules — Baseline widely available, Next.js não precisa
    de config nenhuma (é CSS puro).
+3. **`src/lib/motion.ts`** — vocabulário de animação (springs, tweens,
+   variants). Toda animação de estado sai daqui; CSS cuida só de hover/focus.
+   Ver [`motion-system.md`](./motion-system.md).
 
 ### ⚠️ Ordem de import em `layout.tsx` importa
 
@@ -141,19 +144,80 @@ erro antes do PR — é a rede de segurança automática pras regras da
 tabela Do/Do not em
 [`design-system.md`](./design-system.md#convenção-css-do--do-not).
 
+## Rotas — login como gate, `(app)` pra tudo autenticado
+
+`/` é a tela de login (`LoginForm`, client component, sem `Header`/
+`Footer`) — só usuário já cadastrado pelo admin entra, sem self-signup,
+sem SSO ainda. Tudo que precisa de sessão vive dentro do route group
+`(app)` (não aparece na URL):
+
+```
+src/app/(frontend)/
+  layout.tsx        — só <html><body>, importa styles.css. Sem fetch, sem chrome.
+  page.tsx           — "/" = LoginForm. Se já tem user, redirect('/inicio').
+  (app)/
+    layout.tsx        — guard: sem user → redirect('/'). Busca payload.auth +
+                         header-announcement, renderiza <Header/><main/><Footer/>.
+    inicio/
+      page.tsx          — conteúdo da home (Hero + FeatureGrid).
+```
+
+Página nova que precisa de login: criar pasta dentro de `(app)/` — o
+guard e o chrome (`Header`/`Footer`) já vêm de graça do layout do
+grupo, não duplicar a checagem de `payload.auth` em cada `page.tsx`.
+Página pública nova (sem login): criar direto em `(frontend)/`, fora do
+grupo `(app)`.
+
+`LoginForm` (`src/components/LoginForm/`) mostra `logo-color.svg`
+(`public/assets/icons/`, mesmo arquivo do `Header`/`Footer` em fundo
+claro) + form de e-mail/senha. Faz POST pra `/api/users/login` (REST
+nativo do Payload pra collection `users`) — a resposta já seta o cookie
+de auth, não precisa de lógica extra de sessão no front. Erro de
+credencial mostra a mensagem que o Payload devolve
+(`data.errors[0].message`, já em pt-BR), sem `alert()`.
+
+**Logout**: botão "Sair" no `Header` (só renderiza quando `userEmail`
+existe) — `onClick` faz POST pra `/api/users/logout` (REST nativo,
+limpa o cookie/sessão no Payload) e depois `router.push('/')` +
+`router.refresh()`. `/admin` (painel do Payload) já tem logout próprio
+embutido, não precisa de nada custom lá.
+
+## Lint de JS/TS (ESLint) — Next 16 usa flat config nativo
+
+`eslint.config.mjs` importa `eslint-config-next/core-web-vitals` e
+`eslint-config-next/typescript` **direto**, sem `FlatCompat`:
+
+```js
+import nextCoreWebVitals from 'eslint-config-next/core-web-vitals'
+import nextTypescript from 'eslint-config-next/typescript'
+
+const eslintConfig = [...nextCoreWebVitals, ...nextTypescript, /* ... */]
+```
+
+A partir do Next 16, `eslint-config-next` exporta flat config nativo
+(array de objetos com plugins já instanciados), não mais o formato
+legado `extends: ['next/core-web-vitals']` resolvido via
+`FlatCompat.extends(...)`. Usar `FlatCompat` aqui quebra: ele tenta
+envelopar um pacote que já é flat config, duplica a instância do
+plugin `react` e trava o ESLint inteiro com `TypeError: Converting
+circular structure to JSON` ao tentar reportar o erro de validação —
+sem stack trace útil apontando pra causa real. Se `pnpm lint` travar
+assim de novo após upgrade do Next/`eslint-config-next`, é essa
+incompatibilidade — checar
+`node_modules/next/dist/docs/*/eslint.md` pro formato atual esperado
+antes de tocar no config.
+
 ## Estado atual
 
-- `layout.tsx` renderiza `Header` e `Footer` fora do `<main>` — são
-  landmarks fixos do site (não conteúdo de página), então vivem no
-  layout raiz: `<Header /> <main>{children}</main> <Footer />`. Busca
-  de dados do Payload pro `Header` (usuário autenticado, aviso da
-  topbar) também mora no `layout.tsx`, não em `page.tsx`.
-- `page.tsx` só compõe o conteúdo da página: `Hero` → `FeatureGrid`.
+- `page.tsx` da home (`(app)/inicio/page.tsx`) só compõe: `Hero` →
+  `FeatureGrid`.
 - `Footer` já aceita `footerLinks`/`social` via props (pronto pra virar
-  CMS-driven), mas `layout.tsx` hoje renderiza `<Footer />` sem passar
-  nada — usa os defaults hardcoded no próprio componente.
+  CMS-driven), mas `(app)/layout.tsx` hoje renderiza `<Footer />` sem
+  passar nada — usa os defaults hardcoded no próprio componente.
 - Payload já alimenta o usuário autenticado (`payload.auth`) e o aviso
   da topbar do `Header` (global `header-announcement`) — ver
   [`payload-cms.md`](./payload-cms.md) pro que é CMS-driven e o que
   ainda é hardcoded (nav, redes/UFs, resto da home), esperando a
   collection `Pages`/blocks.
+- SSO Microsoft: não implementado ainda — avaliar quando virar
+  requisito concreto (Payload aceita auth strategy customizada/OIDC).

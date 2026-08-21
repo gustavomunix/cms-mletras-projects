@@ -48,13 +48,30 @@ padrão** pra um novo pedaço de conteúdo.
   (WCAG 2.2.2, conteúdo que atualiza automaticamente precisa dar pra
   pausar). Container tem `role="status"` pra leitor de tela anunciar a
   troca.
-- **Fluxo**: `src/app/(frontend)/page.tsx` chama
+- **Fluxo**: `src/app/(frontend)/(app)/layout.tsx` chama
   `payload.findGlobal({ slug: 'header-announcement' })`, filtra
   `messages` por `enabled && text`, mapeia pra
   `{ label, badge, ctaLabel, ctaHref }` e passa como prop `announcements`
   (array) + `announcementIntervalSeconds` pro `Header`. Array vazio =
   nada renderiza.
 - **Editar conteúdo**: `/admin` → Globals → "Avisos do Header".
+
+### Setor do usuário (`Users.setor`)
+
+- **Onde**: `src/collections/Users.ts`.
+- **O quê**: campo `select` obrigatório — `Administrador`, `Equipe de
+  TI`, `Marketing`, `Ecommerce`, `Relações com mercado`, `Editorial`.
+  Sem sistema de role: `setor === 'administrador'` É o flag de admin,
+  usado direto no `access` da collection e do próprio campo.
+- **Access**: só quem já é `administrador` cria/edita usuário ou muda o
+  `setor` de alguém; qualquer usuário autenticado lê `setor` de
+  qualquer outro; cada usuário pode editar seu próprio perfil (fora o
+  campo `setor`). `saveToJWT: true` — não bate no banco pra checar
+  `setor` em todo access control.
+- **Primeiro admin**: collection com `auth:true` e zero documentos cai
+  no fluxo nativo do Payload de "criar primeiro usuário", que ignora
+  `access.create`. Se isso não disparar, criar via Local API
+  (script one-off), nunca relaxando o `access` pra abrir brecha.
 
 ## O que ainda NÃO é CMS-driven (pendências conhecidas)
 
@@ -90,7 +107,18 @@ produção — schema novo não "aparece" sozinho no banco remoto.
 - **Pendência**: a migração para a tabela `header-announcement` ainda
   não foi gerada/commitada. Rodar `pnpm payload migrate:create
   add-header-announcement` antes do primeiro deploy que inclui esse
-  global.
+  global. Mesma pendência pro campo `setor` em `Users` — gerar
+  `pnpm payload migrate:create add-users-setor` antes do deploy que
+  inclui essa mudança.
+- **Cuidado — campo `required: true` novo em collection com linhas
+  existentes**: se não tiver `defaultValue`, o push automático do dev
+  pede confirmação (`Warnings detected during schema push... DATA LOSS
+  WARNING`) e, se aceito, o SQLite recria a tabela e **apaga as linhas
+  que não conseguem satisfazer o NOT NULL** (aconteceu com `setor`:
+  o usuário local existente foi apagado ao aceitar o push). Antes de
+  aceitar esse prompt em dev com dado que importa, ou dar
+  `defaultValue` ao campo, ou anotar quem precisa ser recriado depois
+  via Local API.
 
 ## Fix incidental
 

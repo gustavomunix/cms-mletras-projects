@@ -173,12 +173,34 @@
       }
     }
 
+    .site-header__account {
+      display: block flex;
+      align-items: center;
+      gap: var(--space-xs);
+    }
+
     .site-header__user {
       margin-block: 0;
       max-inline-size: none;
       color: var(--white-trans-70);
       font-size: var(--text-xs);
       white-space: nowrap;
+    }
+
+    .site-header__logout {
+      font-size: var(--text-xs);
+      color: var(--white-trans-70);
+      text-decoration: underline;
+      white-space: nowrap;
+
+      &:hover {
+        color: var(--white);
+      }
+
+      &:focus-visible {
+        outline: solid 1px var(--white);
+        outline-offset: 2px;
+      }
     }
 
     .site-header__search {
@@ -570,21 +592,6 @@
       z-index: 1001;
       background-color: var(--base-ultra-dark-trans-60);
       backdrop-filter: blur(4px);
-      opacity: 0;
-      visibility: hidden;
-
-      @media (prefers-reduced-motion: no-preference) {
-        transition: opacity 0.38s ease, visibility 0s linear 0.38s;
-      }
-
-      &.is-open {
-        opacity: 1;
-        visibility: visible;
-
-        @media (prefers-reduced-motion: no-preference) {
-          transition: opacity 0.38s ease, visibility 0s linear 0s;
-        }
-      }
 
       @container (width >= 48rem) {
         display: none;
@@ -601,19 +608,10 @@
       inline-size: min(85cqi, 420px);
       background-color: var(--primary-ultra-dark);
       border-inline-start: 1px solid var(--white-trans-10);
-      transform: translateX(100%);
       display: block flex;
       flex-direction: column;
       overflow-block: auto;
       overscroll-behavior: contain;
-
-      @media (prefers-reduced-motion: no-preference) {
-        transition: transform 0.42s cubic-bezier(0.4, 0, 0.2, 1);
-      }
-
-      &.is-open {
-        transform: translateX(0);
-      }
 
       @container (width >= 48rem) {
         display: none;
@@ -746,18 +744,6 @@
       }
     }
 
-    :scope.is-open .nav-offcanvas__nav li {
-      @media (prefers-reduced-motion: no-preference) {
-        animation: offcanvas-item-in 0.4s ease both;
-      }
-
-      &:nth-child(1) { animation-delay: 0.08s; }
-      &:nth-child(2) { animation-delay: 0.14s; }
-      &:nth-child(3) { animation-delay: 0.20s; }
-      &:nth-child(4) { animation-delay: 0.26s; }
-      &:nth-child(5) { animation-delay: 0.32s; }
-    }
-
     .nav-offcanvas__ft {
       margin-block-start: var(--space-xxl);
       padding-block-start: var(--space-l);
@@ -784,18 +770,6 @@
       gap: var(--space-s);
       margin: 0;
       padding: 0;
-    }
-  }
-
-  @keyframes offcanvas-item-in {
-    from {
-      opacity: 0;
-      transform: translateX(16px);
-    }
-
-    to {
-      opacity: 1;
-      transform: translateX(0);
     }
   }
 
