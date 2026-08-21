@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import * as motion from 'motion/react-client'
+import { InstagramLogo, LinkedinLogo } from '@phosphor-icons/react/dist/ssr'
 
 import { containerVariants, fadeUp, inViewOnce } from '@/lib/motion'
 
@@ -29,6 +30,11 @@ const DEFAULT_SOCIAL: SocialItem[] = [
   },
   { label: 'Instagram', url: 'https://instagram.com/multiversodasletras', icon: 'instagram' },
 ]
+
+const SOCIAL_ICONS = {
+  linkedin: LinkedinLogo,
+  instagram: InstagramLogo,
+} as const
 
 export function Footer({ footerLinks = [], social = DEFAULT_SOCIAL }: FooterProps) {
   return (
@@ -69,25 +75,22 @@ export function Footer({ footerLinks = [], social = DEFAULT_SOCIAL }: FooterProp
               role="list"
               aria-label="Redes sociais da Multiverso das Letras"
             >
-              {social.map((s) => (
-                <li key={s.icon}>
-                  <a
-                    href={s.url}
-                    target="_blank"
-                    rel="noopener"
-                    className="social-link"
-                    aria-label={`${s.label} (abre em nova aba)`}
-                  >
-                    <img
-                      src={`/assets/icons/${s.icon}.svg`}
-                      width={18}
-                      height={18}
-                      alt=""
-                      aria-hidden="true"
-                    />
-                  </a>
-                </li>
-              ))}
+              {social.map((s) => {
+                const SocialIcon = SOCIAL_ICONS[s.icon]
+                return (
+                  <li key={s.icon}>
+                    <a
+                      href={s.url}
+                      target="_blank"
+                      rel="noopener"
+                      className="social-link"
+                      aria-label={`${s.label} (abre em nova aba)`}
+                    >
+                      <SocialIcon size={18} weight="fill" aria-hidden="true" />
+                    </a>
+                  </li>
+                )
+              })}
             </ul>
           </motion.div>
 

@@ -89,11 +89,8 @@
       block-size: 44px;
       border-radius: var(--radius);
       border: 1px solid var(--white-trans-20);
+      color: var(--white);
       text-decoration: none;
-
-      img {
-        filter: invert(1);
-      }
 
       &:hover {
         border-color: var(--white-trans-50);
