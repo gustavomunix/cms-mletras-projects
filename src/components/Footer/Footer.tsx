@@ -49,7 +49,7 @@ export function Footer({ footerLinks = [], social = DEFAULT_SOCIAL }: FooterProp
         >
           <motion.div className="site-footer__brand" variants={fadeUp}>
             <Link
-              href="/"
+              href="/inicio"
               className="site-footer__logo"
               aria-label="Multiverso das Letras — Página inicial"
             >

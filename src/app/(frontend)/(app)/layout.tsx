@@ -6,6 +6,7 @@ import React from 'react'
 import config from '@/payload.config'
 import { Header } from '@/components/Header/Header'
 import { Footer } from '@/components/Footer/Footer'
+import { getOfficeWeather } from '@/lib/weather'
 
 export default async function AppLayout(props: { children: React.ReactNode }) {
   const { children } = props
@@ -19,24 +20,29 @@ export default async function AppLayout(props: { children: React.ReactNode }) {
     redirect('/')
   }
 
-  const headerAnnouncement = await payload.findGlobal({ slug: 'header-announcement' })
+  const [headerAnnouncement, weather] = await Promise.all([
+    payload.findGlobal({ slug: 'header-announcement' }),
+    getOfficeWeather(),
+  ])
   const announcements = (headerAnnouncement.messages ?? [])
     .filter((message) => message.enabled && message.text)
     .map((message) => ({
-      label: message.text,
-      badge: message.badge ?? 'novidade',
-      ctaLabel: message.ctaLabel || undefined,
-      ctaHref: message.ctaHref || undefined,
+      text: message.text,
+      kicker: message.kicker || undefined,
+      metric: message.metric || undefined,
+      href: message.href || undefined,
     }))
 
   return (
     <>
       <Header
         userEmail={user.email}
+        userSetor={user.setor}
         announcements={announcements}
         announcementIntervalSeconds={headerAnnouncement.intervalSeconds ?? undefined}
+        weather={weather}
       />
-      <main>{children}</main>
+      <main id="main">{children}</main>
       <Footer />
     </>
   )

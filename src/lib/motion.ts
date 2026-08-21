@@ -77,7 +77,7 @@ export const scrimVariants: Variants = {
 }
 
 export const dropdownVariants: Variants = {
-  hidden: { opacity: 0, scale: 0.94, y: -travel.nudge - 2 },
-  visible: { opacity: 1, scale: 1, y: 0, transition: springs.snappy },
-  exit: { opacity: 0, scale: 0.96, y: -travel.nudge },
+  hidden: { opacity: 0, scale: 0.96, y: -travel.nudge },
+  visible: { opacity: 1, scale: 1, y: 0, transition: fades.swap },
+  exit: { opacity: 0, scale: 0.98, y: -travel.nudge, transition: fades.swap },
 }

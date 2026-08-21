@@ -25,6 +25,15 @@ Componentes com props mais ricas (array, objeto) geram o floor card
 typográfico normal (`Hero`, `FeatureGrid` mostram esse floor card — não é
 falha).
 
+`Header` (2026-08-20): chrome de homepage interna. Sem os dois CTAs
+(nav “Fale conosco” e pill do ticker). `<nav>` vazio (sem Sobre/
+Catálogo/Blog); só Redes na barra. Preview autorado em
+`.design-sync/previews/Header.tsx` com sessão + um aviso
+`Palestra`/`16h` — o default vazio some a faixa de aviso e o floor
+card não mostra o ticker. Relógio/clima no centro (Open-Meteo no
+escritório no SSR; GPS + reverse geocode no client). Chip de conta no
+eixo direito. Busca ícone que expande o campo, sem backend.
+
 ## Known render warns
 
 - Nenhum `[FONT_MISSING]` pendente em 2026-08-19: JetBrains Mono

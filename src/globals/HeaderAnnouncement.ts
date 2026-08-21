@@ -1,4 +1,4 @@
-import type { GlobalConfig, Validate } from 'payload'
+import type { GlobalConfig } from 'payload'
 
 export const HeaderAnnouncement: GlobalConfig = {
   slug: 'header-announcement',
@@ -7,34 +7,61 @@ export const HeaderAnnouncement: GlobalConfig = {
     read: () => true,
   },
   admin: {
-    description: 'Mensagens em loop na barra superior do header, cada uma com badge de tipo.',
+    description:
+      'Faixa interna no topo: palestra, parceria, projeto de time, lembrete, número da semana. Sem botão de conversão — se tiver destino, a linha inteira é o link.',
   },
   fields: [
     {
       name: 'messages',
       type: 'array',
-      label: 'Mensagens',
-      labels: { singular: 'Mensagem', plural: 'Mensagens' },
+      label: 'Avisos',
+      labels: { singular: 'Aviso', plural: 'Avisos' },
       admin: {
-        description: 'Ordem aqui define a ordem do loop. Só mensagens marcadas como "Ativa" entram no loop.',
+        description:
+          'Ordem aqui é a ordem do loop. Só itens marcados como Ativo entram. Kicker e métrica são livres — não há tipos pré-definidos.',
       },
       fields: [
         {
           name: 'enabled',
           type: 'checkbox',
-          label: 'Ativa',
+          label: 'Ativo',
           defaultValue: true,
         },
         {
-          name: 'badge',
-          type: 'select',
-          label: 'Tipo',
-          defaultValue: 'novidade',
-          options: [
-            { label: 'Novidade', value: 'novidade' },
-            { label: 'Mensagem', value: 'mensagem' },
-            { label: 'Aviso', value: 'aviso' },
-            { label: 'Alerta', value: 'alerta' },
+          type: 'row',
+          fields: [
+            {
+              name: 'kicker',
+              type: 'text',
+              label: 'Kicker',
+              maxLength: 32,
+              admin: {
+                width: '40%',
+                placeholder: 'Palestra, Parceria, Editorial…',
+                description: 'Opcional. Livre: setor, campanha, lembrete, palestra.',
+              },
+            },
+            {
+              name: 'metric',
+              type: 'text',
+              label: 'Métrica',
+              maxLength: 16,
+              admin: {
+                width: '30%',
+                placeholder: '+18%, 12 mil, 14h',
+                description: 'Opcional. O número em evidência.',
+              },
+            },
+            {
+              name: 'href',
+              type: 'text',
+              label: 'Link',
+              admin: {
+                width: '30%',
+                placeholder: '/inicio',
+                description: 'Opcional. Sem botão — a faixa inteira leva até aqui.',
+              },
+            },
           ],
         },
         {
@@ -42,49 +69,29 @@ export const HeaderAnnouncement: GlobalConfig = {
           type: 'text',
           label: 'Texto',
           required: true,
-        },
-        {
-          name: 'ctaLabel',
-          type: 'text',
-          label: 'Texto do botão (CTA)',
           admin: {
-            description: 'Opcional. Deixe em branco pra mensagem não ter botão/link.',
+            placeholder: 'Lançamento com a editora X na sexta, 16h no auditório',
           },
-        },
-        {
-          name: 'ctaHref',
-          type: 'text',
-          label: 'Link do botão (CTA)',
-          admin: {
-            condition: (_, siblingData) => Boolean(siblingData?.ctaLabel),
-            description: 'Ex: /novidades. Obrigatório quando o texto do botão está preenchido.',
-          },
-          validate: ((value, { siblingData }) => {
-            if ((siblingData as { ctaLabel?: string })?.ctaLabel && !value) {
-              return 'Informe o link quando houver texto do botão.'
-            }
-            return true
-          }) as Validate<string | null | undefined>,
         },
       ],
     },
     {
       name: 'intervalSeconds',
       type: 'number',
-      label: 'Intervalo entre mensagens (segundos)',
-      defaultValue: 5,
+      label: 'Intervalo entre avisos (segundos)',
+      defaultValue: 8,
       min: 2,
       max: 30,
       admin: {
         condition: (_, siblingData) => (siblingData?.messages?.length ?? 0) > 1,
-        description: 'Só importa quando há mais de uma mensagem ativa.',
+        description: 'Só importa quando há mais de um aviso ativo.',
       },
-      validate: ((value) => {
+      validate: (value: number | null | undefined) => {
         if (value != null && (value < 2 || value > 30)) {
           return 'Use um intervalo entre 2 e 30 segundos.'
         }
         return true
-      }) as Validate<number | null | undefined>,
+      },
     },
   ],
 }

@@ -318,7 +318,7 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   createdAt?: T;
 }
 /**
- * Mensagens em loop na barra superior do header, cada uma com badge de tipo.
+ * Faixa interna no topo: palestra, parceria, projeto de time, lembrete, número da semana. Sem botão de conversão — se tiver destino, a linha inteira é o link.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header-announcement".
@@ -326,26 +326,29 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
 export interface HeaderAnnouncement {
   id: number;
   /**
-   * Ordem aqui define a ordem do loop. Só mensagens marcadas como "Ativa" entram no loop.
+   * Ordem aqui é a ordem do loop. Só itens marcados como Ativo entram. Kicker e métrica são livres — não há tipos pré-definidos.
    */
   messages?:
     | {
         enabled?: boolean | null;
-        badge?: ('novidade' | 'mensagem' | 'aviso' | 'alerta') | null;
+        /**
+         * Opcional. Livre: setor, campanha, lembrete, palestra.
+         */
+        kicker?: string | null;
+        /**
+         * Opcional. O número em evidência.
+         */
+        metric?: string | null;
+        /**
+         * Opcional. Sem botão — a faixa inteira leva até aqui.
+         */
+        href?: string | null;
         text: string;
-        /**
-         * Opcional. Deixe em branco pra mensagem não ter botão/link.
-         */
-        ctaLabel?: string | null;
-        /**
-         * Ex: /novidades. Obrigatório quando o texto do botão está preenchido.
-         */
-        ctaHref?: string | null;
         id?: string | null;
       }[]
     | null;
   /**
-   * Só importa quando há mais de uma mensagem ativa.
+   * Só importa quando há mais de um aviso ativo.
    */
   intervalSeconds?: number | null;
   updatedAt?: string | null;
@@ -360,10 +363,10 @@ export interface HeaderAnnouncementSelect<T extends boolean = true> {
     | T
     | {
         enabled?: T;
-        badge?: T;
+        kicker?: T;
+        metric?: T;
+        href?: T;
         text?: T;
-        ctaLabel?: T;
-        ctaHref?: T;
         id?: T;
       };
   intervalSeconds?: T;

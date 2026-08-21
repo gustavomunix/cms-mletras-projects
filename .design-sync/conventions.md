@@ -87,7 +87,13 @@ dos tokens, checklist de componente novo).
 ```tsx
 import { Header, Hero, FeatureGrid, Footer } from 'mletras'
 
-<Header userEmail="user@example.com" />
+<Header
+  userEmail="ana.editorial@mletras.com"
+  userSetor="editorial"
+  announcements={[
+    { kicker: 'Palestra', metric: '16h', text: 'Lançamento no auditório', href: '/inicio' },
+  ]}
+/>
 <Hero
   title="Bem-vindo"
   lead="Texto usando a escala fluida padrão."
