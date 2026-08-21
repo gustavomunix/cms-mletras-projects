@@ -127,6 +127,7 @@ export interface UserAuthOperations {
  */
 export interface User {
   id: number;
+  setor: 'administrador' | 'ti' | 'marketing' | 'ecommerce' | 'relacoes-mercado' | 'editorial';
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -242,6 +243,7 @@ export interface PayloadMigration {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  setor?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
