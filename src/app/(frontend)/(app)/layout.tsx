@@ -38,6 +38,7 @@ export default async function AppLayout(props: { children: React.ReactNode }) {
       <Header
         userEmail={user.email}
         userSetor={user.setor}
+        userRole={user.role}
         announcements={announcements}
         announcementIntervalSeconds={headerAnnouncement.intervalSeconds ?? undefined}
         weather={weather}

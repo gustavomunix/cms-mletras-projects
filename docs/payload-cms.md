@@ -43,13 +43,18 @@ padrão** pra um novo pedaço de conteúdo.
   avança de tempos em tempos (`setInterval`, respeitando
   `intervalSeconds`); troca de mensagem anima com `AnimatePresence`
   (`motion/react`). Roda só se houver mais de 1 aviso ativo. Pausa no
-  hover/focus do bloco (`isAnnouncePausedRef`, transitório) e também via
-  um botão explícito (ícone Play/Pause, `aria-pressed`) sempre focável —
-  hover/focus por si só não bastava pro WCAG 2.2.2 (conteúdo que
-  atualiza automaticamente precisa dar pra pausar), porque um aviso sem
-  `href` não tem nenhum elemento focável dentro do bloco pra receber o
-  foco do teclado. Container tem `role="status"` pra leitor de tela
-  anunciar a troca.
+  hover/focus do bloco (`isAnnouncePausedRef`, transitório). Container
+  tem `role="status"` pra leitor de tela anunciar a troca.
+- ⚠️ **Lacuna de acessibilidade conhecida (WCAG 2.2.2)**: existia um
+  botão explícito de Play/Pause (`aria-pressed`, sempre focável) e ele
+  foi **removido a pedido**. O motivo original de existir continua
+  válido: conteúdo que atualiza sozinho precisa poder ser pausado, e
+  hover/focus não cobre isso — um aviso sem `href` não tem nenhum
+  elemento focável dentro do bloco pra receber foco de teclado, então
+  quem navega por teclado não tem como parar o carrossel. Enquanto o
+  botão não voltar, as alternativas são: deixar todo aviso com `href`,
+  ou dar `tabindex="0"` ao `.site-header__announce-slot` pra que o
+  `onFocus` já existente seja alcançável.
 - **Fluxo**: `src/app/(frontend)/(app)/layout.tsx` chama
   `payload.findGlobal({ slug: 'header-announcement' })`, filtra
   `messages` por `enabled && text`, mapeia pra
@@ -62,22 +67,70 @@ padrão** pra um novo pedaço de conteúdo.
   (era enum inútil). Mesma pendência de migração de produção já anotada
   abaixo.
 
-### Setor do usuário (`Users.setor`)
+### Role e setor do usuário (`Users.role` / `Users.setor`)
 
-- **Onde**: `src/collections/Users.ts`.
-- **O quê**: campo `select` obrigatório — `Administrador`, `Equipe de
-  TI`, `Marketing`, `Ecommerce`, `Relações com mercado`, `Editorial`.
-  Sem sistema de role: `setor === 'administrador'` É o flag de admin,
-  usado direto no `access` da collection e do próprio campo.
-- **Access**: só quem já é `administrador` cria/edita usuário ou muda o
-  `setor` de alguém; qualquer usuário autenticado lê `setor` de
-  qualquer outro; cada usuário pode editar seu próprio perfil (fora o
-  campo `setor`). `saveToJWT: true` — não bate no banco pra checar
-  `setor` em todo access control.
-- **Primeiro admin**: collection com `auth:true` e zero documentos cai
-  no fluxo nativo do Payload de "criar primeiro usuário", que ignora
-  `access.create`. Se isso não disparar, criar via Local API
-  (script one-off), nunca relaxando o `access` pra abrir brecha.
+- **Onde**: `src/collections/Users.ts`, com as funções de acesso em
+  `src/access/isAdmin.ts`.
+- **Dois eixos independentes.** Antes existia só `setor`, e ele fazia
+  dois trabalhos: departamento **e** flag de permissão
+  (`setor === 'administrador'`). Isso forçava uma escolha falsa — pra ser
+  admin a pessoa tinha que deixar de ter um setor real. Agora:
+  - `role` — permissão: `Administrador` / `Colaborador`. É **o** flag de
+    admin, checado em todo `access`. `required`, `saveToJWT: true`,
+    `defaultValue: 'colaborador'`.
+  - `setor` — departamento: `Equipe de TI`, `Marketing`, `Ecommerce`,
+    `Relações com mercado`, `Editorial`. `Administrador` **saiu** da
+    lista. `required`, `saveToJWT: true`, sem `defaultValue` de
+    propósito: um default aqui rotularia gente nova silenciosamente.
+  - Um administrador pode ser de **qualquer** setor. Promover alguém só
+    toca `role`, nunca o `setor`.
+- **Access** (`src/access/isAdmin.ts`, tipado com `Access`/`FieldAccess`):
+  | Operação | Regra |
+  |---|---|
+  | `create` | `isAdmin` |
+  | `read` | `isAuthenticated` |
+  | `update` | `isAdminOrSelf` — cada um edita o próprio perfil |
+  | `delete` | `isAdminNotSelf` |
+  | campo `role` (create/update) | `isAdminFieldLevel` / `isAdminNotSelfFieldLevel` |
+  | campo `setor` (create/update) | `isAdminFieldLevel` |
+- **Guardas anti-lockout**: admin não muda o próprio `role` e não deleta
+  a própria conta (`isAdminNotSelf*`, só comparação booleana, sem query).
+  Isso mantém o invariante "sempre existe ≥1 admin" — sem elas, um
+  clique errado exige script manual pra recuperar acesso (foi exatamente
+  o que aconteceu antes deste refactor).
+- **`/admin` segue aberto a todo usuário autenticado** — não existe
+  `access.admin` na collection. Isso é **decisão consciente**, não
+  descuido: um colaborador entra no painel com permissões reduzidas.
+  Não "consertar" sem antes decidir o produto.
+- **Primeiro admin — hook explícito**: `hooks.beforeChange` da collection
+  força `role = 'administrador'` quando `payload.count` da collection
+  retorna 0 no `create`. O fluxo nativo do Payload (tabela vazia ignora
+  `access.create`) continua sendo o que libera a operação — o hook só
+  define o papel, e access control roda **antes** dos hooks, então isso
+  não abre brecha nenhuma. Antes esse comportamento era só um efeito
+  colateral implícito, invisível no código.
+  - Limitação conhecida: dois `create` simultâneos com a tabela vazia
+    poderiam ambos virar admin. Irrelevante aqui — não há signup público.
+- **Promover alguém depois**: script one-off via Local API
+  (`pnpm payload run <arquivo>`), `payload.update` com
+  `where: { email: ... }` e `data: { role: 'administrador' }`. Nunca
+  relaxar o `access` pra abrir brecha. ⚠️ `role` tem `saveToJWT: true`,
+  então **a pessoa precisa deslogar e logar de novo** — o cookie de
+  sessão antigo carrega o papel velho.
+- **Indicação visual**: `admin.defaultColumns: ['email', 'role', 'setor']`
+  coloca os dois na lista de usuários do painel, e cada campo tem
+  `admin.description` + `admin.width: '50%'` pra ler como dois eixos
+  distintos. Nada de componente React customizado — o projeto não tem
+  nenhum `admin.components`, e um `Cell` custom só pra colorir um badge
+  adicionaria `generate:importmap` permanente ao fluxo sem ganho.
+  No frontend, o `Header` mostra um badge "Admin" ao lado do setor
+  (`site-header__account-badge` no desktop, `nav-offcanvas__badge` no
+  offcanvas).
+- **Tipos, não duplicação**: `Header.tsx` importa
+  `User['setor']` / `User['role']` de `@/payload-types` em vez de
+  redeclarar os unions à mão. Foi a duplicação antiga que espalhou
+  `'administrador'` como se fosse um setor também no frontend — agora
+  mexer no schema quebra o `SETOR_LABELS` em tempo de compilação.
 
 ## O que ainda NÃO é CMS-driven (pendências conhecidas)
 
@@ -99,10 +152,17 @@ padrão** pra um novo pedaço de conteúdo.
   offcanvas), não reintroduzir a prop vazia. Links sociais
   (LinkedIn/Instagram) ainda hardcoded em `DEFAULT_SOCIAL`. Contato /
   "Fale conosco" saíram: o site só existe na área logada; a conta
-  (e-mail + setor + Sair) ocupa o eixo direito da top-bar.
+  (e-mail + setor + badge "Admin" quando `role === 'administrador'` +
+  Sair) ocupa o eixo direito da top-bar.
 - Collection `Pages`/blocks pra home — ver
   [`frontend-architecture.md`](./frontend-architecture.md), ainda não
   existe.
+- **Access da collection `Media`** — `src/collections/Media.ts` só define
+  `read: () => true`. Sem `create`/`update`/`delete`, o default do Payload
+  libera pra qualquer autenticado; combinado com `/admin` aberto a todos,
+  qualquer colaborador sobe e apaga mídia. Não é regressão (sempre foi
+  assim), mas agora que existe `src/access/isAdmin.ts` a correção é
+  barata — decidir o produto e aplicar `isAdmin`/`isAuthenticated`.
 
 ## Migrações (D1/SQLite)
 
@@ -117,12 +177,28 @@ produção — schema novo não "aparece" sozinho no banco remoto.
   é passado como `prodMigrations` pro `sqliteD1Adapter` em
   `payload.config.ts`; `pnpm run deploy:database` roda `payload migrate`
   usando esse array contra o D1 remoto.
-- **Pendência**: a migração para a tabela `header-announcement` ainda
-  não foi gerada/commitada. Rodar `pnpm payload migrate:create
-  add-header-announcement` antes do primeiro deploy que inclui esse
-  global. Mesma pendência pro campo `setor` em `Users` — gerar
-  `pnpm payload migrate:create add-users-setor` antes do deploy que
-  inclui essa mudança.
+- **Resolvido**: `src/migrations/20260821_170618_add_users_role.ts` zerou
+  a fila de pendências — como o diff é contra o último schema
+  *commitado*, ela traz de uma vez `payload_kv`, as tabelas de
+  `header-announcement` **e** as colunas `role`/`setor` de `users`.
+- ⚠️ **Risco latente nessa migração**: a linha
+  `ALTER TABLE users ADD setor text NOT NULL` **não tem `DEFAULT`**.
+  Comportamento do SQLite, verificado na prática (3.51):
+  - tabela **vazia** → o `ADD ... NOT NULL` sem default **passa**;
+  - tabela **com linhas** → falha com
+    `Cannot add a NOT NULL column with default value NULL`.
+
+  Hoje isso é inofensivo: `wrangler.jsonc` ainda tem
+  `"database_id": "DATABASE_ID"` (placeholder), então produção nunca
+  rodou e o D1 remoto vai receber a migração 1 (cria `users` vazia) antes
+  desta. Foi decisão **deixar sem default**: se algum dia existir usuário
+  em produção antes dessa migração, é melhor ela falhar alto e forçar
+  alguém a decidir o setor dessas pessoas do que rotular todas como TI
+  em silêncio. O `role`, esse sim, tem `DEFAULT 'colaborador'` no SQL.
+- Nota de leitura do D1 local: o miniflare usa WAL. Ler o `.sqlite` com
+  `?immutable=1` **ignora o WAL** e devolve dado velho — atrapalhou a
+  conferência da promoção. Pra inspecionar o estado real, copiar
+  `.sqlite` + `-wal` + `-shm` juntos e consultar a cópia.
 - **Cuidado — campo `required: true` novo em collection com linhas
   existentes**: se não tiver `defaultValue`, o push automático do dev
   pede confirmação (`Warnings detected during schema push... DATA LOSS

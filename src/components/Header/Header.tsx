@@ -33,6 +33,7 @@ import {
   travel,
 } from '@/lib/motion'
 
+import type { User } from '@/payload-types'
 import type { WeatherSnapshot } from '@/lib/weather'
 
 import { HeaderStatus } from './HeaderStatus'
@@ -56,8 +57,8 @@ type Announcement = {
   href?: string
 }
 
-type UserSetor =
-  'administrador' | 'ti' | 'marketing' | 'ecommerce' | 'relacoes-mercado' | 'editorial'
+type UserSetor = User['setor']
+type UserRole = User['role']
 
 type HeaderProps = {
   social?: SocialItem[]
@@ -66,6 +67,7 @@ type HeaderProps = {
   announcementIntervalSeconds?: number
   userEmail?: string
   userSetor?: UserSetor
+  userRole?: UserRole
   weather?: WeatherSnapshot | null
 }
 
@@ -102,7 +104,6 @@ const SOCIAL_ICONS = {
 } as const
 
 const SETOR_LABELS: Record<UserSetor, string> = {
-  administrador: 'Administrador',
   ti: 'Equipe de TI',
   marketing: 'Marketing',
   ecommerce: 'Ecommerce',
@@ -174,6 +175,7 @@ export function Header({
   announcementIntervalSeconds = DEFAULT_ANNOUNCEMENT_INTERVAL_SECONDS,
   userEmail,
   userSetor,
+  userRole,
   weather = null,
 }: HeaderProps) {
   const router = useRouter()
@@ -346,6 +348,7 @@ export function Header({
 
   const current = announcements[announceIndex % Math.max(announcements.length, 1)]
   const setorLabel = userSetor ? SETOR_LABELS[userSetor] : undefined
+  const isAdmin = userRole === 'administrador'
   const initials = userEmail ? initialsFromEmail(userEmail) : ''
 
   const search = (
@@ -423,7 +426,10 @@ export function Header({
           >
             <div className="site-header__account-stack">
               <p className="site-header__account-email">{userEmail}</p>
-              {setorLabel ? <p className="site-header__account-setor">{setorLabel}</p> : null}
+              <div className="site-header__account-meta">
+                {setorLabel ? <p className="site-header__account-setor">{setorLabel}</p> : null}
+                {isAdmin ? <span className="site-header__account-badge">Admin</span> : null}
+              </div>
               <motion.button
                 type="button"
                 className="site-header__logout"
@@ -697,7 +703,10 @@ export function Header({
                 </span>
                 <span className="nav-offcanvas__user-meta">
                   <span className="nav-offcanvas__user">{userEmail}</span>
-                  {setorLabel ? <span className="nav-offcanvas__setor">{setorLabel}</span> : null}
+                  <span className="nav-offcanvas__meta">
+                    {setorLabel ? <span className="nav-offcanvas__setor">{setorLabel}</span> : null}
+                    {isAdmin ? <span className="nav-offcanvas__badge">Admin</span> : null}
+                  </span>
                 </span>
                 <motion.button
                   type="button"

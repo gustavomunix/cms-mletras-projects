@@ -127,7 +127,14 @@ export interface UserAuthOperations {
  */
 export interface User {
   id: number;
-  setor: 'administrador' | 'ti' | 'marketing' | 'ecommerce' | 'relacoes-mercado' | 'editorial';
+  /**
+   * Só o administrador cria, edita e remove outros usuários.
+   */
+  role: 'administrador' | 'colaborador';
+  /**
+   * Departamento da pessoa. Não afeta a permissão — administrador pode ser de qualquer setor.
+   */
+  setor: 'ti' | 'marketing' | 'ecommerce' | 'relacoes-mercado' | 'editorial';
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -243,6 +250,7 @@ export interface PayloadMigration {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  role?: T;
   setor?: T;
   updatedAt?: T;
   createdAt?: T;
