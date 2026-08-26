@@ -39,6 +39,13 @@
   }
 
   @scope (.site-header) {
+    .site-header__top-bar {
+      position: relative;
+      z-index: 2;
+      max-block-size: calc(var(--header-topbar-h) * (1 - var(--header-progress)));
+      opacity: calc(1 - var(--header-progress));
+    }
+
     :scope {
       --header-progress: 0;
       --header-progress-pct: 0%;
@@ -73,13 +80,6 @@
       &[data-collapsed] .site-header__top-bar {
         visibility: hidden;
       }
-    }
-
-    .site-header__top-bar {
-      position: relative;
-      z-index: 2;
-      max-block-size: calc(var(--header-topbar-h) * (1 - var(--header-progress)));
-      opacity: calc(1 - var(--header-progress));
     }
 
     .site-header__top-bar-inner {

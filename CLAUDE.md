@@ -28,6 +28,21 @@ Todo componente em `src/components/<Nome>/` segue o padrão (ver
 - Só `var(--*)` de `styles.css` (canônico) — nunca valor hardcoded de cor,
   espaçamento ou radius.
 
+## Lint
+
+`pnpm lint:css` roda `stylelint` (`stylelint-config-standard` +
+`stylelint-config-modern`) sobre `src/**/*.css` — obrigatório passar antes
+de considerar uma mudança de CSS pronta. Ver `docs/design-system.md#lint`.
+
+# Git
+
+Nunca rodar `git commit` sem o usuário pedir explicitamente naquele turno —
+inclusive para fixups pequenos e óbvios (ex.: correção de `.gitignore`).
+Fazer o trabalho (edits, staging) é ok; commitar não. Depois de terminar uma
+mudança commit-worthy, parar e perguntar ou deixar a working tree suja
+avisando o que está staged/mudado — esperar um "commita"/"faz o commit"
+explícito.
+
 <!-- BEGIN:nextjs-agent-rules -->
 
 # This is NOT the Next.js you know

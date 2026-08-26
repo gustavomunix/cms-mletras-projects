@@ -21,6 +21,8 @@ página/componente.
 | `text-wrap: balance` / `pretty` | Wrap padrão em heading e corpo de texto |
 | `@media (prefers-reduced-motion: no-preference)` | `* { transition: none }` global em `reduce` |
 | `container-type` em `html` e containers de layout (`.feature-grid`, futuros) | Largura fixa em `px` pro conteúdo |
+| `max-inline-size: fit-content` / `block-size: max-content` | Tamanho fixo (`width: 300px`, `height: 200px`) em elemento de conteúdo |
+| `grid-template-rows/columns: subgrid` (+ `grid-row: span N` no filho) | Altura fixa ou JS pra alinhar grids aninhados entre si |
 
 `clamp()` — o termo do meio sempre com `rem` (`1.076rem + 0.217cqi`),
 nunca só `cqi`. Ranged queries não podem se sobrepor.
@@ -126,6 +128,27 @@ Arquivos: `Satoshi-Variable.woff2/.woff`,
 `@font-face` no topo de `styles.css`. `InterTight-*` vêm do subset "latin"
 do Google Fonts (cobre acentuação PT-BR — á/ã/ç/é/etc. estão no range
 Latin-1 Supplement).
+
+## Gotchas
+
+- Ranged queries (`@container`/`@media`) não podem se sobrepor:
+  `width <= 20em` / `20em < width <= 40em` / `width > 40em` — nunca
+  `width < 20em` / `width >= 20em` cobrindo a mesma borda duas vezes.
+- `grid-template-rows: subgrid` só herda as tracks que o filho reivindica
+  — sempre parear com `grid-row: span N` no filho pra ele ocupar as N
+  rows do pai; sem o `span`, o subgrid filho pega 1 row só e não alinha
+  com nada.
+
+## Lint
+
+`stylelint` roda sobre `src/**/*.css` com `stylelint-config-standard` +
+`stylelint-config-modern` (`stylelint.config.mjs`), mais
+`selector-class-pattern` fixando a nomenclatura BEM-like
+(`.bloco`/`.bloco__elemento`/`.bloco--modificador`) e
+`no-unknown-custom-properties`/`no-unknown-custom-media` com
+`referenceFiles: ['src/app/**/styles.css']` — variável CSS ou
+`@custom-media` não declarado em `styles.css` vira erro de lint, não só
+convenção informal. Rodar via `pnpm lint:css`.
 
 Ver também [`frontend-architecture.md`](./frontend-architecture.md) pra
 como usar esses tokens ao criar um componente novo.
